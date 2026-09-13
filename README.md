@@ -15,7 +15,8 @@
 
 ## What it sets up
 
-- i3 gaps, dark borders, a matching status bar, and Picom rounded corners.
+- i3 gaps, dark borders, a top status bar, and Picom rounded corners.
+- Compact Wi-Fi, CPU, RAM, disk, battery, and clock readouts with warning colors.
 - Rofi with Catppuccin, Nord, and Dracula themes.
 - Flameshot screenshots, Arabic-capable Noto fonts, and GTK dark preferences.
 - Bluetooth and network tray applets, PipeWire audio, and two-finger scrolling.
