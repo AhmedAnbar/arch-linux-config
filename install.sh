@@ -53,7 +53,7 @@ printf 'Existing configuration files are backed up before replacement.\n'
 group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock xorg-server xorg-xinit xorg-xinput xorg-xrandr xf86-input-libinput kitty rofi picom flameshot noto-fonts dex xss-lock networkmanager network-manager-applet bluez bluez-utils blueman libpulse psmisc gsettings-desktop-schemas
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
-group 'Development and command-line utilities' base-devel git github-cli vim neovim dialog
+group 'Development and command-line utilities (including PHP/Composer)' base-devel git github-cli vim neovim dialog php composer
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
 group 'Filesystem utilities and backup applications (no disk or bootloader configuration)' btrfs-progs dosfstools mtools ntfs-3g timeshift grub-btrfs
