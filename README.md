@@ -65,6 +65,8 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `dex` | Installer | Program to generate and execute DesktopEntry files of type Application. |
 | 💬 | `dialog` | Installer | A tool to display dialog boxes from shell scripts. |
 | 💬 | `discord` | Optional applications | Voice, video and text chat. |
+| 🐳 | `docker` | Docker setup | Container engine, command-line client and system daemon. |
+| 🐳 | `docker-compose` | Docker setup | Define and run multi-container applications using `docker compose`. |
 | 🖥️ | `dmenu` | Legacy option | Generic menu for X. |
 | 💾 | `dosfstools` | Installer | DOS filesystem utilities. |
 | 📦 | `dropbox` | Optional AUR | Synchronize files with Dropbox. |
@@ -86,6 +88,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🔒 | `i3lock` | Installer | Improved screenlocker based upon XCB and PAM. |
 | 🖥️ | `i3status` | Installer | Generates status bar to use with i3bar, dzen2 or xmobar. |
 | ⌨️ | `kitty` | Installer | GPU-accelerated terminal emulator. |
+| 🐳 | `lazydocker` | Docker setup | Terminal UI for Docker containers, images, logs and Compose services. |
 | 🧰 | `lazygit` | Neovim | Simple terminal UI for git commands. |
 | 🔎 | `less` | AUR build review | A terminal based program for viewing text files. |
 | 🔊 | `libpulse` | Installer | PulseAudio-compatible client library and command-line audio tools. |
@@ -433,7 +436,25 @@ Neo-tree/Oil, Git, completion, folds, debugging, database UI, Markdown/Obsidian,
 Go/Rust helpers and Laravel tools. macOS metadata, IDE state and conflicted
 duplicate files are excluded. Obsidian vault paths still point to your old
 Dropbox folders; change them if needed. Database connections and AI credentials
-are not included. Optional external tools (Docker/lazydocker, Delve, database
+are not included. Docker Engine, Compose and lazydocker are offered together by
+the main installer's Docker group (`pacman --needed` keeps installed packages).
+A separate service prompt runs `sudo systemctl enable --now docker.service`,
+starting Docker immediately and at future boots. Existing container data and
+daemon configuration are left intact; no test containers are downloaded or run.
+Use `sudo docker compose version` to check Compose and `sudo lazydocker` to open
+the terminal UI. Space + `ld` in Neovim runs lazydocker without sudo and therefore
+requires separately configured Docker access.
+
+The installer does not add users to the Docker group or loosen socket permissions.
+[Docker documents that group membership grants root-level privileges](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
+Without sudo, the [upstream Go installation method](https://github.com/jesseduffield/lazydocker#go)
+can install a user-local binary:
+
+```bash
+GOBIN="$HOME/.local/bin" go install github.com/jesseduffield/lazydocker@v0.25.2
+```
+
+The bundled Zsh config includes `~/.local/bin` on PATH. Optional external tools (Delve, database
 clients) must be installed for those integrations. Codeium and Copilot are excluded;
 completion comes from language servers, snippets and local sources.
 

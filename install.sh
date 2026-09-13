@@ -54,6 +54,7 @@ group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
 group 'Development and command-line utilities (including PHP/Composer)' base-devel git github-cli vim neovim dialog php composer
+group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
 group 'Filesystem utilities and backup applications (no disk or bootloader configuration)' btrfs-progs dosfstools mtools ntfs-3g timeshift grub-btrfs
@@ -133,7 +134,7 @@ if ask 'Set the dark appearance preference in your current desktop session?'; th
         run gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     else printf 'Install gsettings-desktop-schemas and rerun to set the desktop preference.\n'; fi
 fi
-for service in NetworkManager.service bluetooth.service cups.service fstrim.timer; do
+for service in NetworkManager.service bluetooth.service cups.service fstrim.timer docker.service; do
     if ask "Enable and start $service?"; then run sudo systemctl enable --now "$service"; fi
 done
 if ask 'Enable LightDM for future boots (does not start it or replace an existing display manager)?'; then
