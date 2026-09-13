@@ -147,6 +147,13 @@ fi
 if ask 'Apply the touchpad script in the current X11 session?'; then
     run sh "$target_config/i3/touchpad.sh"
 fi
+if ask 'Set up Zsh, Oh My Zsh, autosuggestions and syntax highlighting?'; then
+    if "$dry_run"; then
+        bash "$bundle_dir/setup-zsh.sh" --dry-run
+    else
+        bash "$bundle_dir/setup-zsh.sh"
+    fi
+fi
 printf '\nFinished. Backups, when needed: %s\n' "$backup_dir"
 printf 'Log out and log in to apply startup programs. Alt+D: Rofi; Alt+Shift+S: screenshot.\n'
 printf 'Firefox Catppuccin theme installation and Bluetooth pairing remain interactive in those apps.\n'

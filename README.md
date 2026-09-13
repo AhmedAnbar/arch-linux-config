@@ -106,6 +106,22 @@ Validated: Bash/sh syntax, i3 config parser, and the three Rofi theme parsers.
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 
+## Zsh and Oh My Zsh
+
+The installer offers Zsh setup, or run it independently:
+
+```bash
+bash setup-zsh.sh
+```
+
+It offers installing Zsh and the Arch autosuggestions/syntax-highlighting
+packages, downloading Oh My Zsh, backing up and replacing `~/.zshrc`, and changing
+the login shell. The configuration includes Git, sudo, extract, and colored-man-pages
+plugins, history search, completion, and guarded development aliases.
+The default theme is robbyrussell; if Starship is installed it supplies the prompt.
+Atuin and NVM load only when installed. Personal credentials and server aliases
+from the old configuration are excluded.
+
 ## License and credits
 
 Copyright (C) 2026 AhmedAnbar. This project is distributed under the
