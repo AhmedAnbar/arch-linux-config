@@ -72,7 +72,7 @@ if ask 'Install the official Laravel language server into your Composer global e
     run composer global require laravel/lsp --no-interaction
 fi
 if ask 'Install syntax parsers and run configuration smoke tests?'; then
-    run nvim --headless '+TSInstallSync lua vim vimdoc php json blade javascript typescript tsx html css go rust markdown markdown_inline' '+qa!'
+    run nvim --headless -c "luafile $bundle_dir/scripts/install-parsers.lua" '+qa!'
     run nvim --headless -l "$bundle_dir/tests/nvim-smoke.lua"
 fi
 printf '\nRestart Neovim after tool installation. Leader is Space; Space + ? searches keymaps.\n'

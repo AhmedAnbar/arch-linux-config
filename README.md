@@ -412,6 +412,8 @@ from the old configuration are excluded.
 Run `bash setup-nvim.sh` (also offered by the main installer). It offers system
 dependencies, a full configuration backup/restore, locked plugin installation,
 Mason tools, the official Laravel LSP, syntax parsers and smoke tests separately.
+Parser installation skips existing parsers without prompting and verifies that
+each configured parser loads, so the headless step is safe to rerun.
 Use `--dry-run` to preview commands without making changes. Requires Neovim 0.11+.
 The installer offers Rust/Cargo via the official interactive Rustup command:
 
