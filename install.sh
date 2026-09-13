@@ -109,7 +109,7 @@ if ask 'Install the desktop configuration bundle (each existing changed file ask
     while IFS= read -r -d '' source <&3; do
         relative=${source#"$bundle_dir/config/"}
         install_file "$source" "$relative"
-    done 3< <(find "$bundle_dir/config" -type f -print0 | sort -z)
+    done 3< <(find "$bundle_dir/config" -path "$bundle_dir/config/nvim" -prune -o -type f -print0 | sort -z)
     if ! "$dry_run" && command -v i3 >/dev/null; then i3 -C -c "$target_config/i3/config"; fi
 fi
 if ask 'Choose the Rofi theme for the installed launcher?'; then
@@ -153,6 +153,10 @@ if ask 'Set up Zsh, Oh My Zsh, autosuggestions and syntax highlighting?'; then
     else
         bash "$bundle_dir/setup-zsh.sh"
     fi
+fi
+if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-nvim.sh" --dry-run
+    else bash "$bundle_dir/setup-nvim.sh"; fi
 fi
 printf '\nFinished. Backups, when needed: %s\n' "$backup_dir"
 printf 'Log out and log in to apply startup programs. Alt+D: Rofi; Alt+Shift+S: screenshot.\n'

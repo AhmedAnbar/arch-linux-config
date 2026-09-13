@@ -123,6 +123,52 @@ The default theme is robbyrussell; if Starship is installed it supplies the prom
 Atuin and NVM load only when installed. Personal credentials and server aliases
 from the old configuration are excluded.
 
+## Neovim / Laravel
+
+Run `bash setup-nvim.sh` (also offered by the main installer). It offers system
+dependencies, a full configuration backup/restore, locked plugin installation,
+Mason tools, the official Laravel LSP, syntax parsers and smoke tests separately.
+Use `--dry-run` to preview commands without making changes. Requires Neovim 0.11+.
+
+The bundle restores the old theme, editing preferences, snippets, Telescope,
+Neo-tree/Oil, Git, completion, folds, debugging, database UI, Markdown/Obsidian,
+Go/Rust helpers and Laravel tools. macOS metadata, IDE state and conflicted
+duplicate files are excluded. Obsidian vault paths still point to your old
+Dropbox folders; change them if needed. Database connections and AI credentials
+are not included. Optional external tools (Docker/lazydocker, Delve, database
+clients) must be installed for those integrations. Codeium and Copilot are excluded;
+completion comes from language servers, snippets and local sources.
+
+| Shortcut | Action |
+| --- | --- |
+| Space + `?` | Search keymaps (Telescope) |
+| Space + Space | Show keymap groups (which-key) |
+| Space + `ff` / `fg` | Find files / search text |
+| Space + `n` | Toggle Neo-tree |
+| Space + `la` / `lr` / `lt` | Artisan / routes / Tinker |
+| `gd` / `K` | LSP definition / documentation |
+| Space + `ca` / `rn` | Code actions / rename |
+| Space + `mp` | Format file or selection |
+
+PHPActor handles PHP; the [official Laravel LSP](https://github.com/laravel/lsp)
+adds framework features for PHP and Blade, attaching only inside an `artisan`
+project. The installer uses `composer global require laravel/lsp`. Neovim checks
+PATH and the standard Composer global bin locations. Restart Neovim after
+installing servers. Only open trusted projects: Laravel tooling can execute PHP
+and generate helpers in the project's vendor directory.
+
+Formatting uses Conform only (Pint for PHP, blade-formatter for Blade); the old
+duplicate formatting hooks were removed. LSP setup uses the current Neovim API.
+Tree-sitter/textobjects retain the legacy `master` API for the old integrations.
+`:Mason`, `:checkhealth` and `:checkhealth vim.lsp` show tool/runtime status.
+Run `nvim --headless -l tests/nvim-smoke.lua` to exercise plugin loading and filetypes;
+this does not prove project-specific LSP, database, debugger or AI functionality.
+
+Restoration checks passed on Neovim 0.12.5: Lua syntax, plugin loading, ten
+filetypes, both keymap menus, Mason package names, and installer shell syntax.
+At restoration time PHP, Composer, Node/npm and Go were not installed, so server
+installation and end-to-end Laravel behavior still require running the setup script.
+
 ## License and credits
 
 Copyright (C) 2026 AhmedAnbar. This project is distributed under the

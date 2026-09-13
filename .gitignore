@@ -6,3 +6,6 @@
 .env.*
 .DS_Store
 backups/
+*.kate-swp
+._*
+.DS_Store
