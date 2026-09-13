@@ -458,8 +458,12 @@ and generate helpers in the project's vendor directory.
 Formatting uses Conform only (Pint for PHP, blade-formatter for Blade); the old
 duplicate formatting hooks were removed. LSP setup uses the current Neovim API.
 Tree-sitter/textobjects retain the legacy `master` API for the old integrations.
+A scoped compatibility adapter converts Neovim 0.12 capture lists for the legacy
+plugin's query handlers; it does not modify Neovim's global Tree-sitter API.
+Autotag uses its standalone setup, without the deprecated Tree-sitter module.
 `:Mason`, `:checkhealth` and `:checkhealth vim.lsp` show tool/runtime status.
-Run `nvim --headless -l tests/nvim-smoke.lua` to exercise plugin loading and filetypes;
+Run `nvim --headless -l tests/nvim-smoke.lua` to exercise plugin loading, filetypes,
+real Markdown/HTML/PHP/Blade/Lua content and README syntax highlighting;
 this does not prove project-specific LSP, database, debugger or AI functionality.
 
 Restoration checks passed on Neovim 0.12.5: Lua syntax, plugin loading, ten

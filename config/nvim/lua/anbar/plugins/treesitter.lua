@@ -13,7 +13,10 @@ return {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function(_, opts)
-			require("nvim-ts-autotag").setup({})
+			require("anbar.user.treesitter_compat").setup()
+			require("nvim-ts-autotag").setup({
+        opts = { enable_close = true, enable_rename = true, enable_close_on_slash = true },
+      })
 			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 			parser_config.blade = {
 				install_info = {
@@ -28,13 +31,6 @@ return {
 			local configs = require("nvim-treesitter.configs")
 			configs.setup({
 				auto_install = false,
-				autotag = {
-					enable = true,
-					enable_rename = true,
-					enable_close = true,
-					enable_close_on_slash = true,
-					-- filetypes = { "html" , "xml" },
-				},
 				ensure_installed = {
 					"lua",
 					"vim",
