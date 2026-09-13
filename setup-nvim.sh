@@ -14,7 +14,28 @@ ask() { local answer; read -r -p "$1 [y/N] " answer || return 1; [[ "$answer" ==
 run() { printf '  '; printf '%q ' "$@"; printf '\n'; if ! "$dry_run"; then "$@"; fi; }
 if ask 'Install/upgrade Neovim and its system dependencies on Arch?'; then
     [[ -f /etc/arch-release ]] || { printf 'Package installation requires Arch Linux.\n' >&2; exit 1; }
-    run sudo pacman -Syu --needed neovim git base-devel nodejs npm php composer go rust ripgrep fd unzip curl xclip lazygit ttf-jetbrains-mono-nerd
+    run sudo pacman -Syu --needed neovim git base-devel nodejs npm php composer go ripgrep fd unzip curl xclip lazygit ttf-jetbrains-mono-nerd
+fi
+# Load an existing Rustup environment even when launched from Bash instead of Zsh.
+load_cargo_env() {
+    if ! "$dry_run" && [[ -r "${CARGO_HOME:-$HOME/.cargo}/env" ]]; then
+        source "${CARGO_HOME:-$HOME/.cargo}/env"
+    fi
+}
+load_cargo_env
+if ask 'Install Rust and Cargo with the official interactive Rustup installer?'; then
+    if command -v rustup >/dev/null; then
+        printf 'Rustup is already installed; ensuring the stable toolchain is available.\n'
+        run rustup toolchain install stable
+    else
+        if command -v rustc >/dev/null; then
+            printf 'An existing Rust installation was found. Rustup may ask you to resolve a conflict; no system packages will be removed automatically.\n'
+        fi
+        run bash -o pipefail -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    fi
+    load_cargo_env
+    run cargo --version
+    run rustc --version
 fi
 config_root=${XDG_CONFIG_HOME:-$HOME/.config}
 if ask 'Back up the entire current Neovim configuration and restore this bundle?'; then
@@ -36,11 +57,14 @@ if ask 'Install the configured Mason language servers and formatters?'; then
         if ! "$dry_run" && ! command -v "$tool" >/dev/null; then
             printf 'Missing %s; rerun and accept system dependency installation first.\n' "$tool" >&2
             if [[ "$tool" == cargo || "$tool" == rustc ]]; then
-                printf 'htmx-lsp requires Rust/Cargo. On Arch: sudo pacman -Syu --needed rust\n' >&2
+                printf 'htmx-lsp requires Rust/Cargo. Rerun and accept the Rustup installation step.\n' >&2
             fi
             exit 1
         fi
     done
+    # Rustup shims may exist without an installed/default toolchain.
+    run cargo --version
+    run rustc --version
     run nvim --headless '+MasonToolsInstallSync' '+qa!'
     run nvim --headless '+lua for _, name in ipairs(require("anbar.plugins.mason")[2].opts.ensure_installed) do if not require("mason-registry").get_package(name):is_installed() then io.stderr:write("Mason package failed: " .. name .. "\n"); vim.cmd("cquit 1") end end' '+qa!'
 fi
