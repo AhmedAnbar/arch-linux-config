@@ -17,7 +17,7 @@
 
 ## What it sets up
 
-- i3 gaps, dark borders, a top status bar, and Picom rounded corners.
+- Compact i3 gaps (6px between windows, 4px outer), 1px dark borders, a top status bar, and Picom rounded corners.
 - Compact Wi-Fi, CPU, RAM, disk, battery, and clock readouts with warning colors.
 - Rofi with Catppuccin, Nord, and Dracula themes.
 - Flameshot screenshots, Arabic-capable Noto fonts, and GTK dark preferences.
@@ -367,9 +367,13 @@ Rofi uses `~/.config/rofi/active-theme.rasi`. Change its single line to select:
 @theme "i3-theme.rasi"
 ```
 
-Alternatives are `i3-theme-nord.rasi` and `i3-theme-dracula.rasi`. This bundle
-explicitly sets transparent widget backgrounds to address the earlier broken
-colors; visual rendering still needs checking in a real desktop session.
+Alternatives are `i3-theme-nord.rasi` and `i3-theme-dracula.rasi`.
+Alt+D uses the bundled `i3/launcher.sh`, which starts Rofi with `-no-config`
+and the selected theme. Unrelated global Rofi settings cannot override this
+launcher. Each palette defines normal, alternate and selected list-row colors
+explicitly. Shift+Right switches between Apps, Run and Window modes; run
+`sh ~/.config/i3/launcher.sh run` to open command mode directly.
+Your global `~/.config/rofi/config.rasi` and the emoji picker remain unchanged.
 
 ## Laptop brightness and emoji keys
 

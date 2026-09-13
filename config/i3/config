@@ -90,10 +90,10 @@ for_window [class="flameshot"] floating enable, border pixel 0, fullscreen enabl
 floating_modifier $mod
 
 # Comfortable spacing and subtle borders for tiled and floating windows.
-default_border pixel 2
-default_floating_border pixel 2
-gaps inner 12
-gaps outer 8
+default_border pixel 1
+default_floating_border pixel 1
+gaps inner 6
+gaps outer 4
 
 # move tiling windows via drag & drop by left-clicking into the title bar,
 # or left-clicking anywhere into the window while holding the floating modifier.
@@ -106,7 +106,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # Start Rofi's desktop application launcher.
-bindsym $mod+d exec --no-startup-id rofi -show drun -theme ~/.config/rofi/active-theme.rasi
+bindsym $mod+d exec --no-startup-id sh ~/.config/i3/launcher.sh
 # There also is i3-dmenu-desktop which only displays applications shipping a
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
