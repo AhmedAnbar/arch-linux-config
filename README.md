@@ -10,7 +10,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-b4befe" alt="License: GPL-3.0"></a>
   <img src="https://img.shields.io/badge/OS-Arch_Linux-1793D1?logo=archlinux&amp;logoColor=white" alt="Arch Linux">
   <img src="https://img.shields.io/badge/Desktop-i3-313244?logo=i3&amp;logoColor=white" alt="i3 desktop">
-  <img src="https://img.shields.io/badge/Shell-Bash-a6e3a1?logo=gnubash&amp;logoColor=313244" alt="Bash">
+  <img src="https://img.shields.io/badge/Shell-Zsh-a6e3a1?logo=zsh&amp;logoColor=313244" alt="Zsh">
 </p>
 
 ## What it sets up
