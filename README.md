@@ -445,7 +445,10 @@ Use `sudo docker compose version` to check Compose and `sudo lazydocker` to open
 the terminal UI. Space + `ld` in Neovim runs lazydocker without sudo and therefore
 requires separately configured Docker access.
 
-The installer does not add users to the Docker group or loosen socket permissions.
+The installer offers a separate, default-No prompt to add the current user to the
+Docker group using `usermod -aG docker`, preserving existing group memberships.
+It never loosens socket permissions. Log out of the desktop completely and back
+in afterward so terminals and Neovim inherit the new group membership.
 [Docker documents that group membership grants root-level privileges](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 Without sudo, the [upstream Go installation method](https://github.com/jesseduffield/lazydocker#go)
 can install a user-local binary:

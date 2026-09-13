@@ -137,6 +137,18 @@ fi
 for service in NetworkManager.service bluetooth.service cups.service fstrim.timer docker.service; do
     if ask "Enable and start $service?"; then run sudo systemctl enable --now "$service"; fi
 done
+printf '\nDocker group membership grants root-level access to this machine.\n'
+if ask 'Allow this user to run Docker and lazydocker without sudo by joining the docker group?'; then
+    docker_user=$(id -un)
+    if [[ " $(id -nG "$docker_user") " == *" docker "* ]]; then
+        printf '%s is already a member of the docker group.\n' "$docker_user"
+    elif ! "$dry_run" && ! getent group docker >/dev/null; then
+        printf 'The docker group does not exist. Install Docker first, then rerun this step.\n' >&2
+    else
+        run sudo usermod -aG docker "$docker_user"
+        printf 'Log out of the desktop completely and log back in to activate Docker access.\n'
+    fi
+fi
 if ask 'Enable LightDM for future boots (does not start it or replace an existing display manager)?'; then
     if [[ -L /etc/systemd/system/display-manager.service ]] && [[ $(readlink /etc/systemd/system/display-manager.service) != *lightdm.service ]]; then
         printf 'Another display manager is enabled; leaving it unchanged.\n'
