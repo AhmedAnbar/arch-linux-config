@@ -5,6 +5,7 @@ return {
 		config = function()
 			if vim.g.anbar_smoke then return end
 			local notify = require("notify")
+      notify.setup({ background_colour = "#1e1e2e" })
 
 			local filtered_message = { "No information available" }
 
@@ -28,15 +29,15 @@ return {
 
 			-- Update colors to use catpuccino colors
 			vim.cmd([[
-        highlight NotifyERRORBorder guifg=#ed8796
-        highlight NotifyERRORIcon guifg=#ed8796
-        highlight NotifyERRORTitle  guifg=#ed8796
-        highlight NotifyINFOBorder guifg=#8aadf4
-        highlight NotifyINFOIcon guifg=#8aadf4
-        highlight NotifyINFOTitle guifg=#8aadf4
-        highlight NotifyWARNBorder guifg=#f5a97f
-        highlight NotifyWARNIcon guifg=#f5a97f
-        highlight NotifyWARNTitle guifg=#f5a97f
+        highlight NotifyERRORBorder guifg=#f38ba8
+        highlight NotifyERRORIcon guifg=#f38ba8
+        highlight NotifyERRORTitle  guifg=#f38ba8
+        highlight NotifyINFOBorder guifg=#89b4fa
+        highlight NotifyINFOIcon guifg=#89b4fa
+        highlight NotifyINFOTitle guifg=#89b4fa
+        highlight NotifyWARNBorder guifg=#fab387
+        highlight NotifyWARNIcon guifg=#fab387
+        highlight NotifyWARNTitle guifg=#fab387
       ]])
 		end,
 	},

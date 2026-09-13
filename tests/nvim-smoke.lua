@@ -48,6 +48,13 @@ if ok then
   vim.cmd.edit(vim.fn.fnameescape(repo .. "/README.md"))
   local parsed, failure = pcall(parse_buffer)
   if not parsed then table.insert(errors, "README: " .. tostring(failure)) end
+  assert(vim.g.colors_name == "catppuccin-mocha", "Catppuccin Mocha is not active")
+  assert(not require("catppuccin").options.transparent_background, "Editor background should be opaque")
+  assert(vim.api.nvim_get_hl(0, { name = "Normal" }).bg, "Editor background color is missing")
+  require("lualine.utils.notices").show_notices()
+  local notices = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+  if notices:match("%S") then table.insert(errors, "Lualine: " .. notices) end
+  vim.cmd.close()
   assert(vim.g.mapleader == " ", "Leader should be Space")
   assert(vim.fn.maparg(" ?", "n") ~= "", "Space + ? is missing")
   assert(vim.lsp.config.laravel_lsp.filetypes[2] == "blade", "Laravel/Blade LSP missing")

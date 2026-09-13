@@ -437,6 +437,10 @@ are not included. Optional external tools (Docker/lazydocker, Delve, database
 clients) must be installed for those integrations. Codeium and Copilot are excluded;
 completion comes from language servers, snippets and local sources.
 
+Neovim uses **Catppuccin Mocha** with an opaque dark background. The theme loads
+before UI plugins; lualine uses its `catppuccin-nvim` theme and notifications use
+Mocha colors. Wrapping-mode notifications are disabled without disabling wrapping.
+
 | Shortcut | Action |
 | --- | --- |
 | Space + `?` | Search keymaps (Telescope) |
