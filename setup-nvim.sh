@@ -14,7 +14,7 @@ ask() { local answer; read -r -p "$1 [y/N] " answer || return 1; [[ "$answer" ==
 run() { printf '  '; printf '%q ' "$@"; printf '\n'; if ! "$dry_run"; then "$@"; fi; }
 if ask 'Install/upgrade Neovim and its system dependencies on Arch?'; then
     [[ -f /etc/arch-release ]] || { printf 'Package installation requires Arch Linux.\n' >&2; exit 1; }
-    run sudo pacman -Syu --needed neovim git base-devel nodejs npm php composer go ripgrep fd unzip curl xclip lazygit ttf-jetbrains-mono-nerd
+    run sudo pacman -Syu --needed neovim git base-devel nodejs npm php composer go rust ripgrep fd unzip curl xclip lazygit ttf-jetbrains-mono-nerd
 fi
 config_root=${XDG_CONFIG_HOME:-$HOME/.config}
 if ask 'Back up the entire current Neovim configuration and restore this bundle?'; then
@@ -31,9 +31,14 @@ if ask 'Download/build the locked Neovim plugins?'; then
     run nvim --headless '+Lazy! restore' '+qa!'
 fi
 if ask 'Install the configured Mason language servers and formatters?'; then
-    for tool in node npm php composer go; do
+    # htmx-lsp is built from its Cargo crate, rather than a prebuilt release.
+    for tool in node npm php composer go cargo rustc; do
         if ! "$dry_run" && ! command -v "$tool" >/dev/null; then
-            printf 'Missing %s; install system dependencies first.\n' "$tool" >&2; exit 1
+            printf 'Missing %s; rerun and accept system dependency installation first.\n' "$tool" >&2
+            if [[ "$tool" == cargo || "$tool" == rustc ]]; then
+                printf 'htmx-lsp requires Rust/Cargo. On Arch: sudo pacman -Syu --needed rust\n' >&2
+            fi
+            exit 1
         fi
     done
     run nvim --headless '+MasonToolsInstallSync' '+qa!'

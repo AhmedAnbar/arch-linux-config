@@ -132,6 +132,10 @@ Run `bash setup-nvim.sh` (also offered by the main installer). It offers system
 dependencies, a full configuration backup/restore, locked plugin installation,
 Mason tools, the official Laravel LSP, syntax parsers and smoke tests separately.
 Use `--dry-run` to preview commands without making changes. Requires Neovim 0.11+.
+The dependency step includes Arch's `rust` package (Rust and Cargo), required to
+build `htmx-lsp`. If Mason previously failed with `Could not find executable cargo`,
+install it with `sudo pacman -Syu --needed rust`, then rerun the Mason step; tools
+already installed are kept.
 
 The bundle restores the old theme, editing preferences, snippets, Telescope,
 Neo-tree/Oil, Git, completion, folds, debugging, database UI, Markdown/Obsidian,
