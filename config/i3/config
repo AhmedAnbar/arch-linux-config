@@ -71,7 +71,15 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
-# Capture a selected area with Flameshot.
+# Laptop display brightness (5% steps, with a 5% minimum).
+bindsym XF86MonBrightnessDown exec --no-startup-id sh ~/.config/i3/brightness.sh down
+bindsym XF86MonBrightnessUp exec --no-startup-id sh ~/.config/i3/brightness.sh up
+
+# ASUS emoji key sends Super+period; also support a dedicated emoji keysym.
+bindsym --release Mod4+period exec --no-startup-id sh ~/.config/i3/emoji.sh
+bindsym --release XF86EmojiPicker exec --no-startup-id sh ~/.config/i3/emoji.sh
+
+# Screenshot shortcuts.
 bindsym Print exec --no-startup-id flameshot gui
 bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 

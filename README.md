@@ -58,6 +58,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 📡 | `bluez` | Installer | Daemons for the bluetooth protocol stack. |
 | 📡 | `bluez-utils` | Installer | Development and debugging utilities for the bluetooth protocol stack. |
 | 🔎 | `bpytop` | Legacy option | Terminal CPU, memory, disk and network monitor. |
+| ☀️ | `brightnessctl` | Laptop shortcuts | Adjust the hardware display backlight without keyboard-LED changes. |
 | 💾 | `btrfs-progs` | Installer | Btrfs filesystem utilities. |
 | 🧰 | `composer` | Installer | Dependency Manager for PHP. |
 | 🖨️ | `cups` | Installer | OpenPrinting CUPS - daemon package. |
@@ -105,6 +106,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `nitrogen` | Legacy option | Choose and restore an X11 wallpaper. |
 | 🧰 | `nodejs` | Neovim | JavaScript runtime for development tools and language servers. |
 | 🔤 | `noto-fonts` | Installer | Unicode fonts, including Arabic text support. |
+| 😀 | `noto-fonts-emoji` | Laptop shortcuts | Color emoji font used by the picker and applications. |
 | 🧰 | `npm` | Neovim | JavaScript package manager. |
 | 💾 | `ntfs-3g` | Installer | NTFS FUSE driver. |
 | 📝 | `obsidian` | Optional applications | Markdown-based notes and knowledge management. |
@@ -119,6 +121,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | ⚙️ | `psmisc` | Installer | Process utilities including killall, fuser and pstree. |
 | 🔎 | `ripgrep` | Neovim | A search tool that combines the usability of ag with the raw speed of grep. |
 | 🖥️ | `rofi` | Installer | Themed application launcher and window switcher. |
+| 😀 | `rofi-emoji` | Laptop shortcuts | Search emoji and copy a selection to the clipboard. |
 | 📷 | `scrot` | Legacy option | Simple command-line screenshot utility for X. |
 | 💬 | `teams` | Optional AUR | Legacy Microsoft Teams client entry from the old notes. |
 | 📁 | `thunar` | Installer | Modern, fast and easy-to-use file manager for Xfce. |
@@ -367,6 +370,26 @@ Rofi uses `~/.config/rofi/active-theme.rasi`. Change its single line to select:
 Alternatives are `i3-theme-nord.rasi` and `i3-theme-dracula.rasi`. This bundle
 explicitly sets transparent widget backgrounds to address the earlier broken
 colors; visual rendering still needs checking in a real desktop session.
+
+## Laptop brightness and emoji keys
+
+Select the laptop-shortcuts package group and restore the configuration bundle.
+On the ASUS Zenbook UM5606, try Fn+F5/F6 for screen brightness and Fn+F8 for
+emoji (Fn-lock determines whether Fn is needed). The emoji shortcut can also
+be invoked directly with Super+period; dedicated XF86EmojiPicker keys are supported.
+
+Brightness changes in 5% steps with a 5% minimum. The helper selects the
+backlight class automatically, rather than assuming a device name or changing
+keyboard LEDs. It uses brightnessctl's normal access controls—no passwordless
+sudo rules or broad device-permission changes are added. If permissions fail
+after installing the package, log out and back in and test `brightnessctl -c backlight info`.
+
+The Catppuccin emoji picker uses `rofi-emoji` and Noto Color Emoji. Search, press
+Enter to copy, then paste into your application (Ctrl+V, or Ctrl+Shift+V in most
+terminals). Copy mode avoids unreliable automatic typing under X11; see the
+[picker documentation](https://github.com/Mange/rofi-emoji#mode).
+After changing bindings, use Alt+Shift+C to reload i3. Physical key behavior and
+the visible panel brightness should be checked on the target laptop.
 
 ## After installation
 
