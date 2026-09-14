@@ -378,12 +378,32 @@ No download or installation occurs in preview mode.
 
 New installs go into `~/.local/bin/herdr`, already covered by the bundled Zsh PATH.
 An existing Herdr executable is left unchanged, including installs managed by a
-different package manager. No editor plugins, AI providers, agents, background
+different package manager. An optional configuration prompt sets **Ctrl+A** as the
+prefix, preserving your other settings and backing up any changed config next to
+the original as `config.toml.backup-TIMESTAMP-PID`. Existing and generated configs
+are checked with `herdr config check`. Unusual TOML layouts are rejected if they
+cannot be safely updated; multiline-string configs require a manual prefix edit.
+No editor plugins, AI providers, agents, background
 servers or remote connections are configured or started. Run `herdr` yourself
 when ready. For a direct installation, update manually with `herdr update`;
 package-manager installations should use their own update mechanism instead.
 Herdr is independently licensed under Apache-2.0; this setup repository remains
 GPL-3.0-only. No Herdr binary or personal session data is bundled here.
+
+Press **Ctrl+A**, release, then **?** to show the active keybindings. The setting is:
+
+```toml
+[keys]
+prefix = "ctrl+a"
+```
+
+For a running session, use `herdr server reload-config`; if the attached client
+still uses its old prefix, select **reload config** in Herdr's global menu to
+reload the client settings too. Do not stop the server or close your panes.
+
+Developer checks: `node tests/herdr-smoke.js` (Node.js and Herdr required).
+These use temporary config files to test preservation, validation, backups and
+repeat runs; no live sessions are modified.
 
 ## Sway / Wayland desktop
 

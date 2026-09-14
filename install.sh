@@ -172,7 +172,7 @@ if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-nvim.sh" --dry-run
     else bash "$bundle_dir/setup-nvim.sh"; fi
 fi
-if ask 'Install Herdr, the terminal runtime for coding-agent sessions (skips existing installs)?'; then
+if ask 'Set up Herdr and optionally its Ctrl+A prefix (keeps an existing binary)?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-herdr.sh" --dry-run
     else bash "$bundle_dir/setup-herdr.sh"; fi
 fi

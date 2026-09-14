@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-only
-# Install the standalone Herdr binary without changing agent/editor configuration.
+# Install Herdr and optionally configure its prefix without changing agents/editors.
 set -Eeuo pipefail
+bundle_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 dry_run=false
 case "${1:-}" in
     --dry-run) dry_run=true ;;
     --help|-h)
         printf 'Usage: bash setup-herdr.sh [--dry-run]\n'
-        printf 'Optional Herdr install into ~/.local/bin; existing installs are left unchanged.\n'
+        printf 'Optional Herdr install into ~/.local/bin and Ctrl+A prefix; existing binaries are left unchanged.\n'
         exit 0 ;;
     '') ;;
     *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
@@ -19,11 +20,22 @@ ask() {
     [[ "$answer" == y || "$answer" == Y || "$answer" == yes ]]
 }
 install_dir="$HOME/.local/bin"
+configure_prefix() {
+    local config_path=${HERDR_CONFIG_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/herdr/config.toml}
+    if ask 'Set the Herdr prefix to Ctrl+A, preserving other settings and backing up changes?'; then
+        if "$dry_run"; then
+            printf 'Would validate and update only keys.prefix in %s to ctrl+a.\n' "$config_path"
+        else
+            bash "$bundle_dir/scripts/configure-herdr-prefix.sh" "$config_path" "$existing"
+        fi
+    fi
+}
 existing=$(command -v herdr || :)
 if [[ -x "$install_dir/herdr" ]]; then existing="$install_dir/herdr"; fi
 if [[ -n "$existing" ]]; then
-    printf 'Herdr already installed at %s; leaving it unchanged.\n' "$existing"
+    printf 'Herdr already installed at %s; leaving the binary unchanged.\n' "$existing"
     if ! "$dry_run"; then "$existing" --version; fi
+    configure_prefix
     exit 0
 fi
 if [[ -e "$install_dir/herdr" || -L "$install_dir/herdr" ]]; then
@@ -36,6 +48,7 @@ if "$dry_run"; then
     printf 'Would download https://herdr.dev/install.sh to a private temporary directory.\n'
     printf 'Would syntax-check it, ask before execution, and run it with HERDR_INSTALL_DIR=%s.\n' "$install_dir"
     printf 'No download, installation or background process is performed in preview mode.\n'
+    configure_prefix
     exit 0
 fi
 for tool in curl awk sha256sum; do
@@ -61,5 +74,7 @@ if ! ask 'Run the downloaded official installer now?'; then exit 0; fi
 HERDR_INSTALL_DIR="$install_dir" sh "$installer_file"
 [[ -x "$install_dir/herdr" ]] || { printf 'Herdr installation did not produce the expected executable.\n' >&2; exit 1; }
 "$install_dir/herdr" --version
+existing="$install_dir/herdr"
+configure_prefix
 printf 'Installed. The bundled Zsh configuration already includes ~/.local/bin in PATH.\n'
 printf 'Open a new terminal and run herdr when ready; no Herdr server or agents were started here.\n'
