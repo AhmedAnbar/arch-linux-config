@@ -144,6 +144,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `xmonad-contrib` | Legacy option | Community-maintained extensions for xmonad. |
 | 🖥️ | `xmonad-utils` | Legacy option | Small collection of X utilities. |
 | 🖥️ | `xorg-server` | Installer | Xorg X server. |
+| ⌨️ | `xorg-setxkbmap` | Installer | Configure English/Arabic X11 layouts and the Shift+Caps Lock language switch. |
 | 🖥️ | `xorg-xinit` | Installer | X.Org initialisation program. |
 | ⌨️ | `xorg-xinput` | Installer | Small commandline tool to configure devices. |
 | 🖥️ | `xorg-xrandr` | Installer | Primitive command line interface to RandR extension. |
@@ -339,8 +340,8 @@ Dependencies are resolved by pacman. Packages from older notes are optional and
 may no longer exist in enabled repositories or AUR; unavailable repository names
 are reported. AUR failures stop the script with the error visible.
 
-Core configuration includes Alt-based i3 keybindings, 12px inner/8px outer gaps,
-2px borders, a dark bar, Picom rounded corners, three Rofi palettes, Flameshot's
+Core configuration includes Alt-based i3 keybindings, 6px inner/4px outer gaps,
+1px borders, a dark bar, Picom rounded corners, three Rofi palettes, Flameshot's
 legacy X11 capture, Blueman and NetworkManager applets, GTK dark preferences,
 and Noto fonts. PipeWire audio is offered separately. Pasystray is retained in
 the package inventory but is neither installed by default nor autostarted,
@@ -358,6 +359,20 @@ The bundled touchpad helper checks tapping and supported scroll methods, then
 sets `1 0 0` (two-finger, edge, button). It runs at i3 login/restart. For immediate
 application use `sh ~/.config/i3/touchpad.sh`. i3's config reload does not rerun
 startup commands; log out/in to start the applets and compositor.
+
+## English and Arabic keyboard layouts
+
+The i3 configuration enables English (US) (`us`) and standard Arabic (`ara`).
+Press **Shift+Caps Lock** to switch between them. Caps Lock on its own still
+toggles capitalization. This applies to your X11 desktop, not the login screen
+or text consoles, and is set automatically when i3 starts or restarts.
+
+The core package group includes `xorg-setxkbmap`. To apply the layouts immediately
+without logging out (a config reload alone does not rerun startup commands):
+
+```bash
+setxkbmap -layout us,ara -option grp:shift_caps_toggle
+```
 
 ## Change the launcher theme
 

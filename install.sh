@@ -50,7 +50,7 @@ group() {
 printf 'Arch desktop setup — packages, configuration and services\n'
 printf 'Copyright (C) 2026 AhmedAnbar. GPL-3.0-only; no warranty. See LICENSE for redistribution terms.\n'
 printf 'Existing configuration files are backed up before replacement.\n'
-group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock xorg-server xorg-xinit xorg-xinput xorg-xrandr xf86-input-libinput kitty rofi picom flameshot noto-fonts dex xss-lock networkmanager network-manager-applet bluez bluez-utils blueman libpulse psmisc gsettings-desktop-schemas
+group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock xorg-server xorg-setxkbmap xorg-xinit xorg-xinput xorg-xrandr xf86-input-libinput kitty rofi picom flameshot noto-fonts dex xss-lock networkmanager network-manager-applet bluez bluez-utils blueman libpulse psmisc gsettings-desktop-schemas
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
@@ -174,4 +174,5 @@ if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
 fi
 printf '\nFinished. Backups, when needed: %s\n' "$backup_dir"
 printf 'Log out and log in to apply startup programs. Alt+D: Rofi; Alt+Shift+S: screenshot.\n'
+printf 'Keyboard: English (US) + Arabic. Shift+Caps Lock switches layouts after login/restart.\n'
 printf 'Firefox Catppuccin theme installation and Bluetooth pairing remain interactive in those apps.\n'
