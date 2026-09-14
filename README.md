@@ -39,6 +39,7 @@ not official project logos.
 Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Neovim setup](setup-nvim.sh), [captured inventory](installed-explicit.txt),
 [Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
+[Herdr setup](setup-herdr.sh),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
 [locked Neovim plugins](config/nvim/lazy-lock.json). System-package descriptions
 are based on local Arch package metadata and each package's role in this setup.
@@ -65,7 +66,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 💾 | `btrfs-progs` | Installer | Btrfs filesystem utilities. |
 | 🧰 | `composer` | Installer | Dependency Manager for PHP. |
 | 🖨️ | `cups` | Installer | OpenPrinting CUPS - daemon package. |
-| 🌐 | `curl` | Neovim | command line tool and library for transferring data with URLs. |
+| 🌐 | `curl` | Installer / Neovim | Transfer data and download official installers, including Herdr and Rustup. |
 | 🖥️ | `dex` | Installer | Program to generate and execute DesktopEntry files of type Application. |
 | 💬 | `dialog` | Installer | A tool to display dialog boxes from shell scripts. |
 | 💬 | `discord` | Optional applications | Voice, video and text chat. |
@@ -189,7 +190,7 @@ standalone setup. It never removes an existing desktop.
 | 📹 | `xdg-desktop-portal-wlr` | Screen-sharing and screenshot portals for wlroots compositors. |
 | 🪟 | `xorg-xwayland` | Compatibility layer for applications that still require X11. |
 
-### Shell and language runtimes installed separately
+### Standalone tools, shell and language runtimes
 
 These are downloaded only when their corresponding setup step is accepted.
 Rust is installed through Rustup, not the Arch `rust` package.
@@ -197,6 +198,7 @@ Rust is installed through Rustup, not the Arch `rust` package.
 | Icon | Tool | Installed through | Summary |
 | --- | --- | --- | --- |
 | 🐚 | Oh My Zsh | Git / Zsh setup | Shell framework and bundled Git, sudo, extract and colored-man-pages plugins. |
+| 🐑 | [Herdr](https://herdr.dev/) | Optional official installer | Persistent terminal workspaces for running and managing coding-agent sessions. |
 | 🦀 | Rustup | Official interactive installer | Install and manage Rust toolchains. |
 | 🦀 | Rust / `rustc` | Rustup stable toolchain | Rust compiler needed for source-built tools. |
 | 📦 | Cargo | Rustup stable toolchain | Rust package/build tool required by htmx-lsp. |
@@ -357,6 +359,31 @@ Run on an already-installed Arch system as your normal user with sudo access:
 bash install.sh --dry-run
 bash install.sh
 ```
+
+## Herdr
+
+Herdr is an optional step in `install.sh`, or can be set up separately:
+
+```bash
+bash setup-herdr.sh --dry-run
+bash setup-herdr.sh
+```
+
+The setup uses the [official Herdr installer](https://herdr.dev/docs/install/),
+downloaded over HTTPS into a private temporary directory. It checks shell syntax
+and asks you to review/approve the downloaded script before running it as your
+normal user. The upstream installer selects the platform binary and verifies its
+published SHA-256 checksum. It is third-party code; review it before approving.
+No download or installation occurs in preview mode.
+
+New installs go into `~/.local/bin/herdr`, already covered by the bundled Zsh PATH.
+An existing Herdr executable is left unchanged, including installs managed by a
+different package manager. No editor plugins, AI providers, agents, background
+servers or remote connections are configured or started. Run `herdr` yourself
+when ready. For a direct installation, update manually with `herdr update`;
+package-manager installations should use their own update mechanism instead.
+Herdr is independently licensed under Apache-2.0; this setup repository remains
+GPL-3.0-only. No Herdr binary or personal session data is bundled here.
 
 ## Sway / Wayland desktop
 

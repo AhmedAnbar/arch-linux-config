@@ -54,7 +54,7 @@ group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
-group 'Development and command-line utilities (including PHP/Composer)' base-devel git github-cli vim neovim dialog php composer
+group 'Development and command-line utilities (including PHP/Composer)' base-devel git github-cli vim neovim dialog php composer curl
 group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
@@ -171,6 +171,10 @@ fi
 if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-nvim.sh" --dry-run
     else bash "$bundle_dir/setup-nvim.sh"; fi
+fi
+if ask 'Install Herdr, the terminal runtime for coding-agent sessions (skips existing installs)?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-herdr.sh" --dry-run
+    else bash "$bundle_dir/setup-herdr.sh"; fi
 fi
 if ask 'Add the optional Sway Wayland desktop alongside i3?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-sway.sh" --dry-run
