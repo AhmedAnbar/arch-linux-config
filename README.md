@@ -4,20 +4,22 @@
 
 <h1 align="center">Arch Linux Config</h1>
 
-<p align="center">An interactive installer for a comfortable, Catppuccin-inspired i3 desktop.</p>
+<p align="center">An interactive installer for Catppuccin-inspired i3 and Sway desktops.</p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-b4befe" alt="License: GPL-3.0"></a>
   <img src="https://img.shields.io/badge/OS-Arch_Linux-1793D1?logo=archlinux&amp;logoColor=white" alt="Arch Linux">
   <img src="https://img.shields.io/badge/Desktop-i3-313244?logo=i3&amp;logoColor=white" alt="i3 desktop">
+  <img src="https://img.shields.io/badge/Wayland-Sway-b4befe?logo=sway&amp;logoColor=313244" alt="Sway Wayland desktop">
   <img src="https://img.shields.io/badge/Shell-Zsh-a6e3a1?logo=zsh&amp;logoColor=313244" alt="Zsh">
 </p>
 
-[Get started](#get-started) · [Package catalogue](#package-catalogue) · [Neovim / Laravel](#neovim--laravel) · [Backups](#configuration-and-backups)
+[Get started](#get-started) · [Sway / Wayland](#sway--wayland-desktop) · [Package catalogue](#package-catalogue) · [Neovim / Laravel](#neovim--laravel) · [Backups](#configuration-and-backups)
 
 ## What it sets up
 
 - Compact i3 gaps (6px between windows, 4px outer), 1px dark borders, a top status bar, and Picom rounded corners.
+- Optional Sway/Wayland session with matching colors and gaps, a top Waybar, native touch input, and English/Arabic layouts; i3 stays available.
 - Compact Wi-Fi, CPU, RAM, disk, battery, and clock readouts with warning colors.
 - Rofi with Catppuccin, Nord, and Dracula themes.
 - Flameshot screenshots, Arabic-capable Noto fonts, and GTK dark preferences.
@@ -36,6 +38,7 @@ not official project logos.
 
 Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Neovim setup](setup-nvim.sh), [captured inventory](installed-explicit.txt),
+[Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
 [locked Neovim plugins](config/nvim/lazy-lock.json). System-package descriptions
 are based on local Arch package metadata and each package's role in this setup.
@@ -155,6 +158,36 @@ come from older notes and may be unavailable; they are not prerequisites.
 | ⌨️ | `zsh` | Zsh | A very advanced and programmable command interpreter (shell) for UNIX. |
 | ⌨️ | `zsh-autosuggestions` | Zsh | Fish-like autosuggestions for zsh. |
 | ⌨️ | `zsh-syntax-highlighting` | Zsh | Fish shell like syntax highlighting for Zsh. |
+
+### Additional Sway packages
+
+The optional [Sway setup](setup-sway.sh) installs the complete
+[package manifest](sway/packages.txt), including these additional packages.
+It also reuses the existing catalogue's Firefox, Kitty, Rofi/emoji, Noto fonts,
+brightnessctl, Bluetooth/network applets, PipeWire/WirePlumber, libpulse,
+gsettings-desktop-schemas and XDG utilities. No i3 package is required by this
+standalone setup. It never removes an existing desktop.
+
+| Icon | Package | Summary |
+| --- | --- | --- |
+| 🔌 | `dbus` | Session messaging and desktop activation-environment utilities. |
+| 📷 | `grim` | Capture screenshots directly from the Wayland compositor. |
+| 🧰 | `jq` | Inspect JSON from Sway and validate the Waybar configuration. |
+| 💬 | `libnotify` | Send desktop notifications from screenshot helpers. |
+| 💬 | `mako` | Lightweight Wayland notification daemon with Catppuccin colors. |
+| 🔐 | `polkit-gnome` | Graphical authentication prompts for privileged desktop actions. |
+| 🖥️ | `qt5-wayland` | Native Wayland integration for Qt 5 applications. |
+| 🖥️ | `qt6-wayland` | Native Wayland integration for Qt 6 applications. |
+| 📐 | `slurp` | Select a screen region for screenshots and sharing. |
+| 🖥️ | `sway` | Wayland tiling compositor with familiar i3-style controls. |
+| 🎨 | `swaybg` | Draw the Sway desktop background. |
+| 💤 | `swayidle` | Lock on inactivity or before sleep and power down idle screens. |
+| 🔒 | `swaylock` | Lock the Wayland session using your normal login password. |
+| 📊 | `waybar` | Top status bar with workspaces, keyboard language, system stats and tray. |
+| 📋 | `wl-clipboard` | Native Wayland clipboard for screenshots and emoji. |
+| 🗂️ | `xdg-desktop-portal-gtk` | File choosers and general desktop portal integration. |
+| 📹 | `xdg-desktop-portal-wlr` | Screen-sharing and screenshot portals for wlroots compositors. |
+| 🪟 | `xorg-xwayland` | Compatibility layer for applications that still require X11. |
 
 ### Shell and language runtimes installed separately
 
@@ -324,6 +357,85 @@ Run on an already-installed Arch system as your normal user with sudo access:
 bash install.sh --dry-run
 bash install.sh
 ```
+
+## Sway / Wayland desktop
+
+Add Sway alongside i3 without replacing the working X11 configuration:
+
+```bash
+bash setup-sway.sh --dry-run
+bash setup-sway.sh
+```
+
+This is also an optional step in `install.sh`. All prompts default to No.
+NetworkManager, Bluetooth and PipeWire startup are offered separately after the
+package-install prompt, so the standalone script also supports fresh desktops.
+`--config-only` skips package installation; it still prompts before installing
+configuration and before replacing any changed files. Existing files and symlinks
+are backed up under `~/.local/state/arch-desktop-setup/sway-TIMESTAMP-PID/`.
+Copy the saved relative path back under `~/.config/` to restore it.
+The Sway files live separately in [sway/config](sway/config); the i3 configuration
+is not rewritten. Rofi themes and two portable helpers are shared with the i3
+bundle, and an existing Rofi palette selection is preserved.
+
+Install packages first, then apply the configuration. The ASUS Zenbook UM5606
+profile is optional: it uses the existing 1920x1200 desktop size and maps the
+ELAN touchscreen to the internal `eDP-1` display. Other machines should skip it.
+Edit `~/.config/sway/config.d/20-zenbook.conf` if the output/input names differ;
+inspect them with `swaymsg -t get_outputs` and `swaymsg -t get_inputs`.
+Native panel resolution and a different scale can be selected later.
+
+The script reports missing packages with exit status 3; do not switch sessions
+until those packages are installed and Sway configuration validation succeeds.
+Developer smoke tests (requires Node.js): `node tests/sway-smoke.js`.
+They test script syntax, package documentation, preview mode and screenshot error
+handling with mocks, without opening a compositor or touching the real clipboard.
+
+Save your work and **log out normally**, choose **Sway** from the login screen's
+session menu, and log in. Do not restart LightDM from a running desktop.
+If your greeter does not list or cannot start Sway, log into a text console
+(Ctrl+Alt+F3) and run `dbus-run-session sway` there. Do not run Sway with sudo.
+The installer does not replace the display manager or automatically switch you.
+Select **i3** at the next login to return to the original desktop.
+
+| Shortcut | Sway action |
+| --- | --- |
+| Alt+Enter | Kitty terminal |
+| Alt+D | Catppuccin Rofi launcher; Shift+Right switches Apps/Run |
+| Alt+B | Launch Firefox with native Wayland enabled |
+| Alt+Shift+Q | Close the focused window |
+| Shift+Caps Lock | Toggle English (US) / Arabic; the bar shows the layout |
+| Print or Alt+Shift+S | Select a region, save to `Pictures/Screenshots`, and copy PNG |
+| Super+period / ASUS emoji key | Rofi emoji picker; copy then paste into the app |
+| Brightness / volume keys | Adjust display brightness / audio |
+| Alt+Ctrl+L | Lock with Swaylock |
+| Alt+Shift+C or Alt+Shift+R | Reload configuration (not a compositor restart) |
+| Alt+Shift+E | Show logout confirmation |
+
+The other workspace, resize, navigation and split shortcuts match i3.
+The Waybar at the top has keyboard language, Wi-Fi, Bluetooth, CPU, RAM, disk,
+battery and a tray. Click the language label to switch; click Bluetooth to pair
+headphones. No separate volume applet is started. Idle locking is set to five
+minutes; displays power down after ten minutes, with a lock before system sleep.
+Startup scripts run once per session rather than on every configuration reload.
+
+Touchscreen events are handled natively, while touchpads use two-finger natural
+scrolling. Firefox should show **Window Protocol: wayland** in `about:support`.
+Fully quit a Firefox instance started in i3 before testing in Sway, then use
+Alt+B. Sway does not make every legacy/XWayland application support touch
+scrolling; this must be tested in the applications you use.
+
+Sway replaces Picom and uses **square window corners** in the standard package.
+Screenshots use Grim/Slurp instead of the X11-configured Flameshot (annotation is
+not part of this helper). Rofi 2 has native Wayland support, and `wl-clipboard`
+handles copying. Sway-specific portal preferences route screen sharing to `wlr`
+and file choosers to `gtk`, without overriding the i3 portal preferences.
+Neovim, Zsh, Docker and other application configurations stay unchanged.
+
+Upstream references: [Sway migration guide](https://github.com/swaywm/sway/wiki/i3-Migration-Guide),
+[Sway input configuration](https://github.com/swaywm/sway/blob/master/sway/sway-input.5.scd),
+[portal setup](https://github.com/emersion/xdg-desktop-portal-wlr#running),
+and [Rofi emoji clipboard adapters](https://github.com/Mange/rofi-emoji#optional-dependencies).
 
 ## Configuration and backups
 

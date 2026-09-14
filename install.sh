@@ -172,6 +172,10 @@ if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-nvim.sh" --dry-run
     else bash "$bundle_dir/setup-nvim.sh"; fi
 fi
+if ask 'Add the optional Sway Wayland desktop alongside i3?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-sway.sh" --dry-run
+    else bash "$bundle_dir/setup-sway.sh"; fi
+fi
 printf '\nFinished. Backups, when needed: %s\n' "$backup_dir"
 printf 'Log out and log in to apply startup programs. Alt+D: Rofi; Alt+Shift+S: screenshot.\n'
 printf 'Keyboard: English (US) + Arabic. Shift+Caps Lock switches layouts after login/restart.\n'
