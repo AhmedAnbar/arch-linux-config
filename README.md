@@ -83,7 +83,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🧰 | `git` | Installer | Track source-code changes and work with Git repositories. |
 | 🧰 | `github-cli` | Installer | The GitHub CLI. |
 | 🧰 | `go` | Neovim | Core compiler tools for the Go programming language. |
-| 🌐 | `google-chrome` | Optional AUR | Google's web browser. |
+| 🌐 | `google-chrome` | Optional AUR / Chrome prompt | Google's web browser, installed using `yay -S --needed google-chrome`. |
 | 📷 | `gpicview` | Installer | Lightweight image viewer. |
 | ⚙️ | `grub` | Inventory only | GNU GRand Unified Bootloader (2). |
 | 💾 | `grub-btrfs` | Installer | Integrate Btrfs snapshots into GRUB menus; configuration remains manual. |
@@ -359,6 +359,23 @@ Run on an already-installed Arch system as your normal user with sudo access:
 bash install.sh --dry-run
 bash install.sh
 ```
+
+## Google Chrome
+
+In `bash install.sh`, answer **y** to the optional AUR packages section, then
+**y** to **Install Google Chrome (google-chrome) using yay?** The installer uses:
+
+```bash
+yay -S --needed google-chrome
+```
+
+This is the same package as `yay -S google-chrome`; `--needed` avoids reinstalling
+an up-to-date package. Chrome is offered only once, separately from the Firefox
+package group. Review yay's PKGBUILD/diff prompts before approving the build.
+If yay is missing, the AUR section offers to build `yay-bin` after review.
+No default-browser setting, browser profile, or existing Firefox installation is
+changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
+in Rofi after installation.
 
 ## Herdr
 

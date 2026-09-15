@@ -81,7 +81,7 @@ if ((${#packages[@]})); then
         if ((${#available[@]})); then run sudo pacman -S --needed "${available[@]}"; fi
     fi
 fi
-if ask 'Select optional AUR packages (third-party builds; review PKGBUILDs)?'; then
+if ask 'Select optional AUR packages, including Google Chrome (review third-party PKGBUILDs)?'; then
     if ! command -v yay >/dev/null && ask 'Build yay-bin from the AUR after reviewing its PKGBUILD?'; then
         run sudo pacman -Syu --needed base-devel git less
         if "$dry_run"; then
@@ -98,7 +98,11 @@ if ask 'Select optional AUR packages (third-party builds; review PKGBUILDs)?'; t
     fi
     if command -v yay >/dev/null; then
         aur=()
-        for package in dropbox google-chrome postman tor-browser timeshift-autosnap zramd teams; do
+        # Keep Chrome explicit: it is installed using yay, not the pacman package group.
+        if ask 'Install Google Chrome (google-chrome) using yay?'; then
+            aur+=(google-chrome)
+        fi
+        for package in dropbox postman tor-browser timeshift-autosnap zramd teams; do
             if ask "Install $package using yay?"; then aur+=("$package"); fi
         done
         if ((${#aur[@]})); then run yay -S --needed "${aur[@]}"; fi
