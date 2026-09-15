@@ -9,3 +9,5 @@ backups/
 *.kate-swp
 ._*
 .DS_Store
+.zshrc.local
+.ssh/

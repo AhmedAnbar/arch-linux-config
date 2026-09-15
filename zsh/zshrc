@@ -56,6 +56,9 @@ alias dnpm='docker compose run --rm npm'
 alias cr='cargo run'
 alias cw='cargo watch -x run'
 
+# Keep private SSH aliases outside the public configuration bundle.
+[[ ! -r "$HOME/.ssh/aliases.sh" ]] || source "$HOME/.ssh/aliases.sh"
+
 # Optional user tools: use Starship as the sole prompt if installed.
 (( $+commands[starship] )) && eval "$(starship init zsh)"
 (( $+commands[atuin] )) && eval "$(atuin init zsh)"

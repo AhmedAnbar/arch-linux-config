@@ -40,6 +40,7 @@ Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Neovim setup](setup-nvim.sh), [captured inventory](installed-explicit.txt),
 [Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
 [Herdr setup](setup-herdr.sh),
+[private SSH setup](setup-ssh.sh),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
 [locked Neovim plugins](config/nvim/lazy-lock.json). System-package descriptions
 are based on local Arch package metadata and each package's role in this setup.
@@ -114,6 +115,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🧰 | `npm` | Neovim | JavaScript package manager. |
 | 💾 | `ntfs-3g` | Installer | NTFS FUSE driver. |
 | 📝 | `obsidian` | Optional applications | Markdown-based notes and knowledge management. |
+| 🔐 | `openssh` | Installer | SSH client and key utilities for secure remote connections. The server service is not enabled. |
 | 🔊 | `pasystray` | Inventory only | Volume tray applet retained in the old inventory; not autostarted. |
 | 🧰 | `php` | Installer | PHP runtime for Laravel, Composer and language tools. |
 | 🖥️ | `picom` | Installer | X11 compositor for shadows, transparency and rounded corners. |
@@ -376,6 +378,37 @@ If yay is missing, the AUR section offers to build `yay-bin` after review.
 No default-browser setting, browser profile, or existing Firefox installation is
 changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
 in Rofi after installation.
+
+## Private SSH aliases
+
+The installer offers a private SSH setup step, also available separately:
+
+```bash
+bash setup-ssh.sh --dry-run
+bash setup-ssh.sh
+```
+
+Enter a short alias (for example, `vps`), hostname/IP, SSH username, port and the
+path to an existing private key. These values stay on your machine, not in this
+public repository. The script references the key in place; it does not copy,
+print, upload or replace key contents. It restricts key permissions to `600`.
+Keep the key securely backed up; syncing a private key to cloud storage exposes
+it to anyone who gains access to that storage, so protect that account carefully.
+
+Host settings go in `~/.ssh/config.d/ALIAS.conf`, included from `~/.ssh/config`.
+Shell aliases go in `~/.ssh/aliases.sh`, loaded by Bash and the bundled Zsh config.
+The setup adds the loading line to existing shell configs without replacing them.
+Use `ssh vps` immediately, or open a new terminal and type `vps`. To load just the
+aliases in the current Bash/Zsh shell, run `source ~/.ssh/aliases.sh`.
+The chosen alias can shadow another shell command, so choose a distinct name.
+
+Changes are backed up under `~/.local/state/arch-desktop-setup/ssh-TIMESTAMP-PID/`,
+with paths relative to your home directory. Managed symlinks are refused to avoid
+unexpectedly overwriting their targets. The helper does not connect automatically,
+enable `sshd`, forward your SSH agent, or disable host-key checking. Confirm a new
+server's host-key fingerprint against your provider's console before accepting it.
+Existing known-host keys are left intact. Private `.ssh/` directories and
+`.zshrc.local` files are ignored by Git as an additional precaution.
 
 ## Herdr
 
