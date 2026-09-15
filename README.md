@@ -430,6 +430,53 @@ server's host-key fingerprint against your provider's console before accepting i
 Existing known-host keys are left intact. Private `.ssh/` directories and
 `.zshrc.local` files are ignored by Git as an additional precaution.
 
+### Git hosts: clone without extra flags
+
+For self-hosted GitLab or another SSH Git host, the installer offers a separate
+Git-host setup step. You can also run it directly:
+
+```bash
+bash setup-ssh.sh --git --dry-run
+bash setup-ssh.sh --git
+```
+
+Enter an alias (default `gitlab`), your Git hostname, SSH user (default `git`),
+the Git service's SSH port, and your existing private key path. Add the matching
+**public** key to your Git hosting account first. The server administration SSH
+port/user can differ from those of GitLab. No keys are uploaded by the script.
+
+After the default-No confirmation, this configures SSH for that hostname and
+alias, and adds a host-specific `url.<base>.insteadOf` rule in `~/.gitconfig`.
+Then commands such as these need no extra flags or environment variables:
+
+```bash
+git clone https://gitlab.example.com/GROUP/REPOSITORY.git
+cd REPOSITORY
+git pull --ff-only
+```
+
+Although the command uses an HTTPS URL, **Git connects over SSH**, authenticating
+with the configured key. Clone, fetch, pull and push for that exact host prefix
+use the rule; other hosts and unrelated Git settings are preserved. Raw SSH URLs
+for the configured hostname use the key too. The rule does not affect browsers
+or GitLab API requests, and does not configure separate Git LFS authentication.
+It only grants access already allowed for your account. Existing more-specific
+URL rewrites or earlier matching SSH rules can take precedence.
+If an existing host-wide rule points somewhere else (including to an old SSH
+username), setup stops before writing files. Review that rule manually before
+rerunning; the helper does not silently remove competing mappings.
+
+Existing changed Git/SSH files are backed up as described above. Git mode leaves
+shell configs and shell aliases alone; no token is saved, and server details stay
+local. Custom `GIT_CONFIG_GLOBAL` paths and managed symlinks are refused. The
+helper does not connect or automatically accept host keys: verify the fingerprint
+when SSH first asks. A protected private key may still need its passphrase or an
+SSH agent. Preview mode changes nothing.
+
+References: [Git URL rewriting](https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtinsteadOf)
+and [GitLab SSH setup](https://docs.gitlab.com/user/ssh/).
+Developer check: `node tests/ssh-smoke.js`.
+
 ## Herdr
 
 Herdr is an optional step in `install.sh`, or can be set up separately:

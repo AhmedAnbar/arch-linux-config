@@ -176,6 +176,10 @@ if ask 'Configure a private SSH host alias (server details stay on this machine)
     if "$dry_run"; then bash "$bundle_dir/setup-ssh.sh" --dry-run
     else bash "$bundle_dir/setup-ssh.sh"; fi
 fi
+if ask 'Use an SSH key automatically for one Git host, including its HTTPS clone URLs?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-ssh.sh" --git --dry-run
+    else bash "$bundle_dir/setup-ssh.sh" --git; fi
+fi
 if ask 'Restore Neovim, its plugins and PHP/Laravel language tools?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-nvim.sh" --dry-run
     else bash "$bundle_dir/setup-nvim.sh"; fi
