@@ -138,6 +138,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `trayer` | Legacy option | Standalone X11 system tray. |
 | 🔤 | `ttf-jetbrains-mono-nerd` | Neovim | Patched font JetBrains Mono from nerd fonts library. |
 | 📁 | `unzip` | Neovim | For extracting and viewing files in .zip archives. |
+| 🐍 | `uv` | Installer | Python package, project and tool manager; includes `uvx` for running Python tools. |
 | 📝 | `vim` | Installer | Vi Improved, a highly configurable, improved version of the vi text editor. |
 | 🔊 | `wireplumber` | Installer | Session / policy manager implementation for PipeWire. |
 | 📁 | `xarchiver` | Legacy option | GTK frontend to various command line archivers. |
@@ -361,6 +362,25 @@ Run on an already-installed Arch system as your normal user with sudo access:
 bash install.sh --dry-run
 bash install.sh
 ```
+
+## uv / Python tools
+
+Select **Development and command-line utilities (including PHP/Composer and uv)**
+in `bash install.sh`, or install the [official Arch package](https://archlinux.org/packages/extra/x86_64/uv/)
+directly:
+
+```bash
+sudo pacman -Syu --needed uv
+uv --version
+uvx --version
+```
+
+This provides `uv` and `uvx` on the system PATH; no shell configuration changes
+are needed. Use pacman to update this installation, not `uv self update`.
+Run `uv tool install ...` as your normal user, without sudo. If an installed
+tool is not on your PATH, run `uv tool update-shell` and open a new terminal.
+See the [uv tools documentation](https://docs.astral.sh/uv/guides/tools/).
+The setup installs uv only; individual Python tools are your choice.
 
 ## Google Chrome
 
