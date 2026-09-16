@@ -188,6 +188,14 @@ if ask 'Set up Herdr and optionally its Ctrl+A prefix (keeps an existing binary)
     if "$dry_run"; then bash "$bundle_dir/setup-herdr.sh" --dry-run
     else bash "$bundle_dir/setup-herdr.sh"; fi
 fi
+if [[ $(cat /sys/class/dmi/id/product_name 2>/dev/null || true) == *UM5606* ]]; then
+    printf '\nOn this ASUS Zenbook S 16 (UM5606) the firmware pins the CPU to ~605 MHz when\n'
+    printf 'amd_pmf, amdxdna and asus_armoury load at boot, which makes the desktop lag.\n'
+    if ask 'Review the CPU power-cap fix for this laptop?'; then
+        if "$dry_run"; then bash "$bundle_dir/setup-zenbook-cpu-cap.sh" --dry-run
+        else bash "$bundle_dir/setup-zenbook-cpu-cap.sh"; fi
+    fi
+fi
 if ask 'Add the optional Sway Wayland desktop alongside i3?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-sway.sh" --dry-run
     else bash "$bundle_dir/setup-sway.sh"; fi

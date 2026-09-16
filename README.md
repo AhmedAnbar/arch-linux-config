@@ -26,6 +26,7 @@
 - Bluetooth and network tray applets, PipeWire audio, and two-finger scrolling.
 - Optional browsers, file utilities, development tools, and AUR applications.
 - Interactive package choices, preview mode, and configuration backups.
+- On the ASUS Zenbook S 16 (UM5606) only, an optional fix for the firmware CPU power cap.
 
 ## Package catalogue
 
@@ -39,6 +40,7 @@ not official project logos.
 Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Neovim setup](setup-nvim.sh), [captured inventory](installed-explicit.txt),
 [Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
+[Zenbook UM5606 CPU power-cap fix](setup-zenbook-cpu-cap.sh),
 [Herdr setup](setup-herdr.sh),
 [private SSH setup](setup-ssh.sh),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
@@ -686,6 +688,48 @@ terminals). Copy mode avoids unreliable automatic typing under X11; see the
 After changing bindings, use Alt+Shift+C to reload i3. Physical key behavior and
 the visible panel brightness should be checked on the target laptop.
 
+## Zenbook S 16 (UM5606) CPU power cap
+
+On this laptop, `amd_pmf`, `amdxdna` and `asus_armoury` loading during boot make the
+firmware pin every core to its lowest performance level, which makes the whole
+desktop lag: browsers take many seconds to open and typing in a terminal trails
+behind. Measured here on BIOS 318 with Linux 7.2.4:
+
+| | Drivers loaded at boot | Drivers blocked |
+| --- | --- | --- |
+| `sha256sum` of 256 MB, one core | 4.55 s | 0.26 s |
+| Package power, 24 busy threads | 5 W | 34 W |
+| Core frequency under load | 605 MHz | 2.4–3.2 GHz |
+
+The cap is not a Linux policy setting. `cpufreq` asks for maximum performance the
+whole time (`CPPC_REQ` max equals `CPPC_CAP1` highest), and the firmware refuses;
+governor, EPP, platform profile, charger and `amd_pstate` mode make no difference.
+Loading the same modules *after* boot is harmless, so only the boot-time load is blocked.
+
+The installer offers this step only when the DMI model matches UM5606. Run it
+independently, or preview it first:
+
+```bash
+bash setup-zenbook-cpu-cap.sh --dry-run
+bash setup-zenbook-cpu-cap.sh
+```
+
+It writes `/etc/modprobe.d/zenbook-um5606-cpu-cap.conf` and rebuilds the initramfs,
+because the `modconf` hook copies `modprobe.d` into it. Restart, then confirm:
+
+```bash
+time (head -c 256M /dev/zero | sha256sum)          # well under 1s; about 4.5s when capped
+lsmod | grep -E 'amd_pmf|amdxdna|asus_armoury'     # expect no output
+```
+
+Trade-offs: `amd_pmf` (AMD automatic power tuning) is gone, while `quiet`, `balanced`
+and `performance` profiles keep working through `asus-wmi`; `amdxdna` (the NPU driver,
+which requires `amd_pmf`) is gone, and Linux NPU software support is minimal anyway;
+`asus_armoury` firmware attributes are gone, while fan, keyboard backlight and battery
+charge limits remain in `asus_wmi`. `--remove` reverts the change, and `--force`
+applies it on a different model showing the same fault. Recheck after BIOS and kernel
+updates, since a fix upstream would make this unnecessary.
+
 ## After installation
 
 After installation: Alt+D opens Rofi; Alt+Shift+S opens Flameshot; volume keys
@@ -705,7 +749,9 @@ snapshot schedules, GRUB integration, and zram service configuration remain manu
 
 ## Validation
 
-Validated: Bash/sh syntax, i3 config parser, and the three Rofi theme parsers.
+Validated: Bash/sh syntax, i3 config parser, the three Rofi theme parsers, and
+`node tests/zenbook-cpu-cap-smoke.js` (preview, hardware gate and removal of the
+UM5606 CPU power-cap fix, written to a scratch path instead of `/etc`).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 
