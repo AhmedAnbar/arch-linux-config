@@ -26,6 +26,7 @@
 - Bluetooth and network tray applets, PipeWire audio, and two-finger scrolling.
 - Optional browsers, file utilities, development tools, and AUR applications.
 - Optional Conky system panel with Catppuccin, Nord and Dracula themes, switched with Alt+Shift+T.
+- Optional colorls, so `ls` lists files with colours and icons (`colorls -l`) in Bash and Zsh.
 - Interactive package choices, preview mode, and configuration backups.
 - On the ASUS Zenbook S 16 (UM5606) only, an optional fix for the firmware CPU power cap.
 
@@ -43,6 +44,7 @@ Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
 [Zenbook UM5606 CPU power-cap fix](setup-zenbook-cpu-cap.sh),
 [Conky panel setup](setup-conky.sh),
+[colorls setup](setup-colorls.sh),
 [Herdr setup](setup-herdr.sh),
 [private SSH setup](setup-ssh.sh),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
@@ -133,6 +135,8 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🔎 | `ripgrep` | Neovim | A search tool that combines the usability of ag with the raw speed of grep. |
 | 🖥️ | `rofi` | Installer | Themed application launcher and window switcher. |
 | 😀 | `rofi-emoji` | Laptop shortcuts | Search emoji and copy a selection to the clipboard. |
+| 💎 | `ruby` | colorls setup | An object-oriented language for quick and easy programming; runs colorls. |
+| 🎨 | `ruby-colorls` | Optional AUR / colorls setup | Beautifies `ls` with colours and file icons; installed using `yay -S --needed ruby-colorls`. |
 | 📷 | `scrot` | Legacy option | Simple command-line screenshot utility for X. |
 | 💬 | `teams` | Optional AUR | Legacy Microsoft Teams client entry from the old notes. |
 | 📁 | `thunar` | Installer | Modern, fast and easy-to-use file manager for Xfce. |
@@ -712,6 +716,33 @@ drawing is unreliable on Wayland, so the same themes work under Sway and i3.
 The network line follows the interface with the default route at start; switch
 theme or log in again after changing networks.
 
+## colorls
+
+`ls` becomes `colorls -l`: a long listing with colours and file-type icons.
+
+```bash
+bash setup-colorls.sh --dry-run
+bash setup-colorls.sh
+```
+
+The script installs `ruby` and the JetBrains Mono Nerd Font with pacman, then
+`ruby-colorls` from the AUR with yay (review the PKGBUILD when yay asks). It
+installs `~/.config/shell/colorls.sh` and appends one guarded line to `~/.bashrc`
+and, if present, `~/.zshrc`, after backing each file up. The bundled `zsh/zshrc`
+already contains that line.
+
+| Command | Runs |
+| --- | --- |
+| `ls` | `colorls -l` |
+| `ll` | `colorls -la` (sizes are already human-readable; colorls has no `-h`) |
+| `la` | `colorls -A` |
+
+The aliases only apply when `colorls` is installed, so a shell never loses a
+working `ls`. Aliases affect interactive shells only; scripts keep GNU `ls`.
+colorls starts a Ruby interpreter and is slower in very large directories:
+`command ls` or `\ls` runs GNU `ls` directly. Icons need a Nerd Font in the
+terminal; kitty falls back to installed Nerd Fonts automatically.
+
 ## Laptop brightness and emoji keys
 
 Select the laptop-shortcuts package group and restore the configuration bundle.
@@ -797,7 +828,9 @@ Validated: Bash/sh syntax, i3 config parser, the three Rofi theme parsers, and
 `node tests/zenbook-cpu-cap-smoke.js` (preview, hardware gate and removal of the
 UM5606 CPU power-cap fix, written to a scratch path instead of `/etc`), and
 `node tests/conky-smoke.js` (every theme evaluated as Lua for Sway and i3 output,
-plus start, switch, Off and restart behaviour against stubbed `conky` and `rofi`).
+plus start, switch, Off and restart behaviour against stubbed `conky` and `rofi`), and
+`node tests/colorls-smoke.js` (aliases, fallback without colorls, preview, `.bashrc`/`.zshrc`
+wiring without duplicates, against stubbed `colorls`, `yay` and `sudo` in a scratch home).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 

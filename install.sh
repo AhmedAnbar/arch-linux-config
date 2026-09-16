@@ -192,6 +192,10 @@ if ask 'Add the Conky system panel with switchable Catppuccin, Nord and Dracula 
     if "$dry_run"; then bash "$bundle_dir/setup-conky.sh" --dry-run
     else bash "$bundle_dir/setup-conky.sh"; fi
 fi
+if ask 'Replace ls with colorls (ls = colorls -l) in Bash and Zsh?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-colorls.sh" --dry-run
+    else bash "$bundle_dir/setup-colorls.sh"; fi
+fi
 if [[ $(cat /sys/class/dmi/id/product_name 2>/dev/null || true) == *UM5606* ]]; then
     printf '\nOn this ASUS Zenbook S 16 (UM5606) the firmware pins the CPU to ~605 MHz when\n'
     printf 'amd_pmf, amdxdna and asus_armoury load at boot, which makes the desktop lag.\n'
