@@ -111,6 +111,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | ⚙️ | `linux` | Inventory only | The Linux kernel and modules. |
 | ⚙️ | `linux-firmware` | Inventory only | Firmware files for Linux - Default set. |
 | ⚙️ | `linux-headers` | Inventory only | Headers and scripts for building modules for the Linux kernel. |
+| 🔐 | `mkcert` | Installer | Simple tool for making locally-trusted development certificates. |
 | 💾 | `mtools` | Installer | A collection of utilities to access MS-DOS disks. |
 | 📝 | `neovim` | Installer | Extensible editor used by the bundled development configuration. |
 | 📡 | `network-manager-applet` | Installer | Applet for managing network connections. |
@@ -118,6 +119,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `nitrogen` | Legacy option | Choose and restore an X11 wallpaper. |
 | 🧰 | `nodejs` | Neovim | JavaScript runtime for development tools and language servers. |
 | 🔤 | `noto-fonts` | Installer | Unicode fonts, including Arabic text support. |
+| 🔐 | `nss` | Installer | Network Security Services; `certutil` lets mkcert trust its CA in Firefox and Chrome. |
 | 😀 | `noto-fonts-emoji` | Laptop shortcuts | Color emoji font used by the picker and applications. |
 | 🧰 | `npm` | Neovim | JavaScript package manager. |
 | 💾 | `ntfs-3g` | Installer | NTFS FUSE driver. |
@@ -371,6 +373,30 @@ Run on an already-installed Arch system as your normal user with sudo access:
 bash install.sh --dry-run
 bash install.sh
 ```
+
+## Local HTTPS certificates (mkcert)
+
+The development package group includes `mkcert` and `nss`. The installer then
+offers `mkcert -install`, which creates a local certificate authority in
+`~/.local/share/mkcert` and trusts it system-wide and in the Firefox and Chrome
+certificate stores (it asks for sudo for the system store). Run it as your
+normal user, not with `sudo`, or the CA is created for root instead.
+
+```bash
+mkcert -install                                  # once per machine
+mkcert myapp.test localhost 127.0.0.1 ::1        # writes myapp.test+3.pem and -key.pem
+```
+
+On Arch, `mkcert -install` also prints `ERROR: no Firefox and/or Chrome/Chromium
+security databases found`. This is expected and harmless: mkcert 1.4.4 only looks
+in `~/.mozilla/firefox` and `~/.pki/nssdb`, while current Firefox and Chrome keep
+their databases under `~/.config/mozilla` and `~/.local/share/pki`. Arch's `nss`
+links its built-in roots (`libnssckbi.so`) to p11-kit, so both browsers trust the
+system store, where the CA was added. Confirmed with Firefox 155 and Chrome 153.
+
+Restart open browsers after installing the CA. `rootCA-key.pem` must stay
+private: anyone with it can create certificates this machine trusts, so never
+commit or copy it. `mkcert -uninstall` removes the trust again.
 
 ## uv / Python tools
 

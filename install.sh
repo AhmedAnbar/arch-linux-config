@@ -54,7 +54,7 @@ group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
-group 'Development and command-line utilities (including PHP/Composer and uv)' base-devel git github-cli vim neovim dialog php composer curl openssh uv
+group 'Development and command-line utilities (including PHP/Composer, uv and mkcert)' base-devel git github-cli vim neovim dialog php composer curl openssh uv mkcert nss
 group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
@@ -138,6 +138,19 @@ if ask 'Set the dark appearance preference in your current desktop session?'; th
     if command -v gsettings >/dev/null; then
         run gsettings set org.gnome.desktop.interface color-scheme prefer-dark
     else printf 'Install gsettings-desktop-schemas and rerun to set the desktop preference.\n'; fi
+fi
+# Run as the desktop user: sudo would create the CA in root's home, unseen by your browsers.
+printf '\nmkcert creates a local certificate authority trusted by this system, Firefox and Chrome.\n'
+printf 'Keep rootCA-key.pem private: anyone with it can issue certificates this machine trusts.\n'
+if ask 'Create and trust the mkcert local CA for HTTPS development (mkcert -install)?'; then
+    if ! "$dry_run" && ! command -v mkcert >/dev/null; then
+        printf 'mkcert is not installed. Select the development package group, then rerun this step.\n' >&2
+    else
+        run mkcert -install
+        # mkcert 1.4.4 only checks ~/.mozilla and ~/.pki; Arch's NSS reads the system store instead.
+        printf 'A "no Firefox and/or Chrome/Chromium security databases found" message is expected on Arch:\n'
+        printf 'both browsers read the system trust store through p11-kit, where the CA was just added.\n'
+    fi
 fi
 for service in NetworkManager.service bluetooth.service cups.service fstrim.timer docker.service; do
     if ask "Enable and start $service?"; then run sudo systemctl enable --now "$service"; fi
