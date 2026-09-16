@@ -56,6 +56,9 @@ alias dnpm='docker compose run --rm npm'
 alias cr='cargo run'
 alias cw='cargo watch -x run'
 
+# colorls aliases (ls = colorls -l), shared by Bash and Zsh; inactive until colorls is installed.
+[[ ! -r "$HOME/.config/shell/colorls.sh" ]] || source "$HOME/.config/shell/colorls.sh"
+
 # Keep private SSH aliases outside the public configuration bundle.
 [[ ! -r "$HOME/.ssh/aliases.sh" ]] || source "$HOME/.ssh/aliases.sh"
 
