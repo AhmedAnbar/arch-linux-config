@@ -134,6 +134,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🔊 | `pipewire-pulse` | Installer | Low-latency audio/video router and processor - PulseAudio replacement. |
 | 🧰 | `postman` | Optional AUR | Build and test API requests. |
 | ⚙️ | `psmisc` | Installer | Process utilities including killall, fuser and pstree. |
+| 📝 | `retext` | Installer | Markdown editor; its preview mode is the default viewer for `.md` files. |
 | 🔎 | `ripgrep` | Neovim | A search tool that combines the usability of ag with the raw speed of grep. |
 | 🖥️ | `rofi` | Installer | Themed application launcher and window switcher. |
 | 😀 | `rofi-emoji` | Laptop shortcuts | Search emoji and copy a selection to the clipboard. |
@@ -742,6 +743,25 @@ drawing is unreliable on Wayland, so the same themes work under Sway and i3.
 The network line follows the interface with the default route at start; switch
 theme or log in again after changing networks.
 
+## Markdown viewer
+
+Double-clicking a `.md` file opens it rendered in ReText's preview mode. Obsidian
+stays available for notes, but it only opens files that live inside a vault: a
+loose `.md` file just shows its "create or open a vault" screen.
+
+The installer adds `retext` to the browser and file utilities group and offers to
+install `~/.local/share/applications/retext-preview.desktop`, which runs
+`retext --preview %F`, and make it the `text/markdown` default with `xdg-mime`.
+The entry is hidden from Rofi, so the launcher keeps one ReText item for editing;
+press the Preview button in ReText to switch between viewing and editing.
+
+ReText renders with Python-Markdown: nested lists need four-space indentation, code
+blocks have no background shading, and the page is light regardless of the desktop
+theme. File managers such as Thunar use the `.md` extension and open the preview;
+`xdg-open` in a terminal under Sway detects Markdown by content as `text/plain`
+and opens your plain-text editor instead. Undo the default with
+`xdg-mime default me.mitya57.ReText.desktop text/markdown`.
+
 ## colorls
 
 `ls` becomes `colorls -l`: a long listing with colours and file-type icons.
@@ -856,7 +876,9 @@ UM5606 CPU power-cap fix, written to a scratch path instead of `/etc`), and
 `node tests/conky-smoke.js` (every theme evaluated as Lua for Sway and i3 output,
 plus start, switch, Off and restart behaviour against stubbed `conky` and `rofi`), and
 `node tests/colorls-smoke.js` (aliases, fallback without colorls, preview, `.bashrc`/`.zshrc`
-wiring without duplicates, against stubbed `colorls`, `yay` and `sudo` in a scratch home).
+wiring without duplicates, against stubbed `colorls`, `yay` and `sudo` in a scratch home), and
+`node tests/markdown-viewer-smoke.js` (the ReText preview entry, and the installer prompt that
+installs it and sets the `text/markdown` default, previewed in a scratch home).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 
