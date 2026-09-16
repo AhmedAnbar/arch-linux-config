@@ -25,6 +25,7 @@
 - Flameshot screenshots, Arabic-capable Noto fonts, and GTK dark preferences.
 - Bluetooth and network tray applets, PipeWire audio, and two-finger scrolling.
 - Optional browsers, file utilities, development tools, and AUR applications.
+- Optional Conky system panel with Catppuccin, Nord and Dracula themes, switched with Alt+Shift+T.
 - Interactive package choices, preview mode, and configuration backups.
 - On the ASUS Zenbook S 16 (UM5606) only, an optional fix for the firmware CPU power cap.
 
@@ -41,6 +42,7 @@ Sources: [main installer](install.sh), [Zsh setup](setup-zsh.sh),
 [Neovim setup](setup-nvim.sh), [captured inventory](installed-explicit.txt),
 [Sway setup](setup-sway.sh), [Sway package manifest](sway/packages.txt),
 [Zenbook UM5606 CPU power-cap fix](setup-zenbook-cpu-cap.sh),
+[Conky panel setup](setup-conky.sh),
 [Herdr setup](setup-herdr.sh),
 [private SSH setup](setup-ssh.sh),
 [Mason configuration](config/nvim/lua/anbar/plugins/mason.lua), and
@@ -68,6 +70,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | ☀️ | `brightnessctl` | Laptop shortcuts | Adjust the hardware display backlight without keyboard-LED changes. |
 | 💾 | `btrfs-progs` | Installer | Btrfs filesystem utilities. |
 | 🧰 | `composer` | Installer | Dependency Manager for PHP. |
+| 📊 | `conky` | Conky panel | Light-weight system monitor for X, Wayland, and other things, too. |
 | 🖨️ | `cups` | Installer | OpenPrinting CUPS - daemon package. |
 | 🌐 | `curl` | Installer / Neovim | Transfer data and download official installers, including Herdr and Rustup. |
 | 🖥️ | `dex` | Installer | Program to generate and execute DesktopEntry files of type Application. |
@@ -138,7 +141,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 💾 | `timeshift-autosnap` | Optional AUR | Create Timeshift snapshots around package upgrades. |
 | 🌐 | `tor-browser` | Optional AUR | Web browser configured for the Tor network. |
 | 🖥️ | `trayer` | Legacy option | Standalone X11 system tray. |
-| 🔤 | `ttf-jetbrains-mono-nerd` | Neovim | Patched font JetBrains Mono from nerd fonts library. |
+| 🔤 | `ttf-jetbrains-mono-nerd` | Neovim / Conky panel | Patched font JetBrains Mono from nerd fonts library. |
 | 📁 | `unzip` | Neovim | For extracting and viewing files in .zip archives. |
 | 🐍 | `uv` | Installer | Python package, project and tool manager; includes `uvx` for running Python tools. |
 | 📝 | `vim` | Installer | Vi Improved, a highly configurable, improved version of the vi text editor. |
@@ -668,6 +671,47 @@ explicitly. Shift+Right switches between Apps, Run and Window modes; run
 `sh ~/.config/i3/launcher.sh run` to open command mode directly.
 Your global `~/.config/rofi/config.rasi` and the emoji picker remain unchanged.
 
+## Conky system panel
+
+An optional panel in the top-right corner, below the bar: time and date, CPU
+usage with a graph, frequency and temperature, RAM, swap, root disk, network
+download/upload, and battery charge with power draw. The frequency line makes a
+throttled CPU obvious at a glance (see the
+[Zenbook power-cap section](#zenbook-s-16-um5606-cpu-power-cap)).
+
+```bash
+bash setup-conky.sh --dry-run
+bash setup-conky.sh
+```
+
+The script installs `conky` and `ttf-jetbrains-mono-nerd`, copies the panel into
+`~/.config/conky`, adds `~/.config/sway/config.d/30-conky.conf` for Sway, and
+offers to append the same two lines to an existing i3 config. The bundled i3
+config and Sway drop-in already contain them for fresh installs; both are
+harmless before `conky` is installed.
+
+**Change the theme** with **Alt+Shift+T**, which opens a Rofi picker styled by your
+current launcher theme, or from a terminal:
+
+```bash
+sh ~/.config/conky/switch.sh nord     # catppuccin (default), nord, dracula
+sh ~/.config/conky/switch.sh off      # hide it; stays off after the next login
+sh ~/.config/conky/switch.sh --list
+```
+
+The choice is stored in `~/.config/conky/theme`, which reinstalling the bundle
+does not overwrite. `start.sh` restarts the panel, and reruns are safe: it only
+stops a process it started and recorded as `conky`. Errors from Conky itself go
+to `$XDG_RUNTIME_DIR/arch-desktop-conky.log`.
+
+**Add a theme** by copying `~/.config/conky/themes/nord.conf` to a new name and
+changing the six hex colours (no `#`); it appears in the picker automatically.
+Layout changes belong in `~/.config/conky/panel.lua`, which every theme shares.
+The panel uses only Conky's built-in text, bars and graphs because Lua/Cairo
+drawing is unreliable on Wayland, so the same themes work under Sway and i3.
+The network line follows the interface with the default route at start; switch
+theme or log in again after changing networks.
+
 ## Laptop brightness and emoji keys
 
 Select the laptop-shortcuts package group and restore the configuration bundle.
@@ -751,7 +795,9 @@ snapshot schedules, GRUB integration, and zram service configuration remain manu
 
 Validated: Bash/sh syntax, i3 config parser, the three Rofi theme parsers, and
 `node tests/zenbook-cpu-cap-smoke.js` (preview, hardware gate and removal of the
-UM5606 CPU power-cap fix, written to a scratch path instead of `/etc`).
+UM5606 CPU power-cap fix, written to a scratch path instead of `/etc`), and
+`node tests/conky-smoke.js` (every theme evaluated as Lua for Sway and i3 output,
+plus start, switch, Off and restart behaviour against stubbed `conky` and `rofi`).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 

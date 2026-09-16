@@ -188,6 +188,10 @@ if ask 'Set up Herdr and optionally its Ctrl+A prefix (keeps an existing binary)
     if "$dry_run"; then bash "$bundle_dir/setup-herdr.sh" --dry-run
     else bash "$bundle_dir/setup-herdr.sh"; fi
 fi
+if ask 'Add the Conky system panel with switchable Catppuccin, Nord and Dracula themes?'; then
+    if "$dry_run"; then bash "$bundle_dir/setup-conky.sh" --dry-run
+    else bash "$bundle_dir/setup-conky.sh"; fi
+fi
 if [[ $(cat /sys/class/dmi/id/product_name 2>/dev/null || true) == *UM5606* ]]; then
     printf '\nOn this ASUS Zenbook S 16 (UM5606) the firmware pins the CPU to ~605 MHz when\n'
     printf 'amd_pmf, amdxdna and asus_armoury load at boot, which makes the desktop lag.\n'
