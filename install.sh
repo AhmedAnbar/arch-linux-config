@@ -53,7 +53,7 @@ printf 'Existing configuration files are backed up before replacement.\n'
 group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock xorg-server xorg-setxkbmap xorg-xinit xorg-xinput xorg-xrandr xf86-input-libinput kitty rofi picom flameshot noto-fonts dex xss-lock networkmanager network-manager-applet bluez bluez-utils blueman libpulse psmisc gsettings-desktop-schemas
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
-group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils
+group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils retext
 group 'Development and command-line utilities (including PHP/Composer, uv and mkcert)' base-devel git github-cli vim neovim dialog php composer curl openssh uv mkcert nss
 group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
@@ -208,6 +208,19 @@ fi
 if ask 'Replace ls with colorls (ls = colorls -l) in Bash and Zsh?'; then
     if "$dry_run"; then bash "$bundle_dir/setup-colorls.sh" --dry-run
     else bash "$bundle_dir/setup-colorls.sh"; fi
+fi
+# Obsidian opens only files inside a vault, so loose .md files use ReText's rendered preview.
+if ask 'Open Markdown (.md) files rendered in ReText preview by default?'; then
+    viewer_entry="$HOME/.local/share/applications/retext-preview.desktop"
+    if [[ -f "$viewer_entry" ]] && cmp -s -- "$bundle_dir/applications/retext-preview.desktop" "$viewer_entry"; then
+        printf 'Unchanged: %s\n' "$viewer_entry"
+    else
+        run install -Dm644 -- "$bundle_dir/applications/retext-preview.desktop" "$viewer_entry"
+    fi
+    run xdg-mime default retext-preview.desktop text/markdown
+    if ! "$dry_run" && ! command -v retext >/dev/null; then
+        printf 'ReText is not installed yet: select the browser and file utilities group, then rerun.\n'
+    fi
 fi
 if [[ $(cat /sys/class/dmi/id/product_name 2>/dev/null || true) == *UM5606* ]]; then
     printf '\nOn this ASUS Zenbook S 16 (UM5606) the firmware pins the CPU to ~605 MHz when\n'
