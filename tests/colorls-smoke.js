@@ -26,6 +26,8 @@ const log = path.join(scratch, 'calls.log');
 const mock = (name, body) => fs.writeFileSync(path.join(bin, name), '#!/bin/sh\n' + body + '\n', {mode: 0o755});
 mock('colorls', `printf 'colorls %s\\n' "$*" >> "${log}"`);
 const withColorls = {...process.env, PATH: `${bin}:${process.env.PATH}`, HOME: home};
+// The colorls mock logs too (setup runs `colorls --version`), so look for privileged calls by name.
+const ranPackageTools = () => fs.existsSync(log) && /^(sudo|yay) /m.test(fs.readFileSync(log, 'utf8'));
 // An empty PATH: the real /usr/bin/colorls must not leak in once it is installed.
 const emptyBin = path.join(scratch, 'empty-bin');
 fs.mkdirSync(emptyBin);
@@ -70,7 +72,7 @@ try {
     assert.match(preview.stdout, /Would append the colorls aliases to \S+\/\.zshrc/);
     assert.match(preview.stdout, /Preview only/);
     assert.equal(snapshot(), before, 'A preview must not create or change files');
-    assert.equal(fs.existsSync(log), false, 'A preview must not run sudo or yay');
+    assert.equal(ranPackageTools(), false, 'A preview must not run sudo or yay');
 
     // Real run with packages declined: aliases installed, both rc files wired once, with backups.
     const answers = ['n', 'n', 'y', 'y', 'y'];
@@ -84,7 +86,7 @@ try {
     }
     const backups = fs.readdirSync(path.join(home, '.local/state/arch-desktop-setup'), {recursive: true});
     assert.ok(backups.some((file) => file.endsWith('.bashrc')), 'bashrc must be backed up before appending');
-    assert.equal(fs.existsSync(log), false, 'Declined package steps must not run sudo or yay');
+    assert.equal(ranPackageTools(), false, 'Declined package steps must not run sudo or yay');
 
     // The appended bashrc really switches ls to colorls.
     fs.writeFileSync(log, '');
@@ -111,6 +113,17 @@ try {
     check(noYay);
     assert.match(noYay.stdout, /yay is not installed/);
     assert.doesNotMatch(noYay.stdout, /yay -S/);
+
+    // A working colorls needs no gem fix, so the existing prompt order is unchanged.
+    assert.doesNotMatch(preview.stdout, /gem install/);
+    // Arch's unicode-display_width 3.x makes colorls 1.5.0 exit with Gem::MissingSpecError.
+    mock('colorls', `echo "Could not find 'unicode-display_width' (>= 1.7, < 3.0)" >&2; exit 1`);
+    mock('gem', `printf 'gem %s\\n' "$*" >> "${log}"`);
+    const broken = run('bash', [setup, '--dry-run'], {input: 'y\n'.repeat(20), env: withColorls});
+    check(broken);
+    assert.match(broken.stdout, /colorls is installed but fails to start/);
+    assert.match(broken.stdout, /gem install --user-install --no-document unicode-display_width -v \\~\\>\\ 2\.6/);
+    assert.equal(fs.existsSync(log) && fs.readFileSync(log, 'utf8').includes('gem '), false, 'A preview must not run gem');
 } finally {
     fs.rmSync(scratch, {recursive: true, force: true});
 }
