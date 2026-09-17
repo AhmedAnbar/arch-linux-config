@@ -659,6 +659,17 @@ and Noto fonts. PipeWire audio is offered separately. Pasystray is retained in
 the package inventory but is neither installed by default nor autostarted,
 because you requested its removal.
 
+The bundle also installs `~/.config/fontconfig/fonts.conf`, which adds an Arabic text
+face behind the Latin face in each generic family: Noto Sans Arabic after Noto Sans
+for `sans-serif`, `system-ui` and `monospace`, and Noto Naskh Arabic after Noto Serif
+for `serif`. Without it, `fc-match sans-serif:lang=ar` returns Noto Kufi Arabic, whose
+wide geometric letterforms look disconnected in body text, and Chrome renders Arabic
+pages that way; Firefox happens to pick a Naskh face and looks correct either way.
+Latin rendering is unchanged because the Latin face stays first, and the ordering also
+applies to named stacks such as `Roboto`, `Arial` and `Helvetica`, which sites like
+YouTube request instead of the generics. Chrome reads fontconfig once at startup, so
+restart the browser, not just the tab. `noto-fonts` provides all four families.
+
 The bundle also installs `~/.config/kitty`: JetBrains Mono Nerd Font at size 12,
 110% line height, 10px padding, 95% background opacity and the Catppuccin Mocha
 palette in `current-theme.conf`, a copy of the MIT-licensed
@@ -895,7 +906,9 @@ wiring without duplicates, against stubbed `colorls`, `yay` and `sudo` in a scra
 `node tests/markdown-viewer-smoke.js` (the ReText preview entry, and the installer prompt that
 installs it and sets the `text/markdown` default, previewed in a scratch home), and
 `node tests/kitty-smoke.js` (kitty itself parses the bundled config with no ignored lines
-and applies the Catppuccin palette, and the configuration bundle installs both files).
+and applies the Catppuccin palette, and the configuration bundle installs both files), and
+`node tests/fontconfig-smoke.js` (fontconfig resolves Arabic in the generics and in named
+stacks to text faces, Latin stays unchanged, and the bundle installs the file).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 
