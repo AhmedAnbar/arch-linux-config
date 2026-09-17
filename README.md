@@ -100,7 +100,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🖥️ | `i3-wm` | Installer | Tiling window manager with the bundled gaps and keybindings. |
 | 🔒 | `i3lock` | Installer | Improved screenlocker based upon XCB and PAM. |
 | 🖥️ | `i3status` | Installer | Generates status bar to use with i3bar, dzen2 or xmobar. |
-| ⌨️ | `kitty` | Installer | GPU-accelerated terminal emulator. |
+| ⌨️ | `kitty` | Installer | GPU-accelerated terminal emulator, configured with Catppuccin Mocha. |
 | 🐳 | `lazydocker` | Docker setup | Terminal UI for Docker containers, images, logs and Compose services. |
 | 🧰 | `lazygit` | Neovim | Simple terminal UI for git commands. |
 | 🔎 | `less` | AUR build review | A terminal based program for viewing text files. |
@@ -148,7 +148,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 💾 | `timeshift-autosnap` | Optional AUR | Create Timeshift snapshots around package upgrades. |
 | 🌐 | `tor-browser` | Optional AUR | Web browser configured for the Tor network. |
 | 🖥️ | `trayer` | Legacy option | Standalone X11 system tray. |
-| 🔤 | `ttf-jetbrains-mono-nerd` | Neovim / Conky panel | Patched font JetBrains Mono from nerd fonts library. |
+| 🔤 | `ttf-jetbrains-mono-nerd` | Neovim / Conky panel / kitty | Patched font JetBrains Mono from nerd fonts library. |
 | 📁 | `unzip` | Neovim | For extracting and viewing files in .zip archives. |
 | 🐍 | `uv` | Installer | Python package, project and tool manager; includes `uvx` for running Python tools. |
 | 📝 | `vim` | Installer | Vi Improved, a highly configurable, improved version of the vi text editor. |
@@ -659,6 +659,16 @@ and Noto fonts. PipeWire audio is offered separately. Pasystray is retained in
 the package inventory but is neither installed by default nor autostarted,
 because you requested its removal.
 
+The bundle also installs `~/.config/kitty`: JetBrains Mono Nerd Font at size 12,
+110% line height, 10px padding, 95% background opacity and the Catppuccin Mocha
+palette in `current-theme.conf`, a copy of the MIT-licensed
+[catppuccin/kitty](https://github.com/catppuccin/kitty) Mocha theme. The theme is
+a real file rather than a link into a cloned theme collection; a symlink copied
+from macOS arrives as a plain-text `XSym` file, which kitty silently skips and
+falls back to its black default. Open kitty windows pick up changes with
+Ctrl+Shift+F5. Install `ttf-jetbrains-mono-nerd` (Neovim, Conky or colorls setup)
+for the font; kitty substitutes a monospace font otherwise.
+
 Select the core desktop package group before installing the complete configuration
 on a fresh system. Skipping package groups is useful when configuring a system
 where the applications are already installed. Existing files are compared; any
@@ -878,7 +888,9 @@ plus start, switch, Off and restart behaviour against stubbed `conky` and `rofi`
 `node tests/colorls-smoke.js` (aliases, fallback without colorls, preview, `.bashrc`/`.zshrc`
 wiring without duplicates, against stubbed `colorls`, `yay` and `sudo` in a scratch home), and
 `node tests/markdown-viewer-smoke.js` (the ReText preview entry, and the installer prompt that
-installs it and sets the `text/markdown` default, previewed in a scratch home).
+installs it and sets the `text/markdown` default, previewed in a scratch home), and
+`node tests/kitty-smoke.js` (kitty itself parses the bundled config with no ignored lines
+and applies the Catppuccin palette, and the configuration bundle installs both files).
 No package installs or real session/service changes were run while creating this
 bundle. Keep backups until you have checked the restored desktop visually.
 
