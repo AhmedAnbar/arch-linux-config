@@ -70,6 +70,14 @@ if command -v yay >/dev/null; then
 else
     printf 'yay is not installed. Build it from the AUR section of install.sh, then rerun this script.\n'
 fi
+# colorls 1.5.0 requires unicode-display_width < 3.0, but pacman installs 3.x, so colorls
+# exits with Gem::MissingSpecError. A 2.x copy in the user gem path satisfies it alone.
+if command -v colorls >/dev/null && ! colorls --version >/dev/null 2>&1; then
+    printf 'colorls is installed but fails to start (usually unicode-display_width 3.x from pacman).\n'
+    if ask 'Install unicode-display_width 2.x for colorls into your user gems (~/.local/share/gem)?'; then
+        run gem install --user-install --no-document unicode-display_width -v '~> 2.6'
+    fi
+fi
 if ask 'Install the shared ls/ll/la aliases into ~/.config/shell/colorls.sh?'; then
     install_file "$bundle_dir/config/shell/colorls.sh" shell/colorls.sh
 fi

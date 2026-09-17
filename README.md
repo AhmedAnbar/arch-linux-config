@@ -782,7 +782,12 @@ bash setup-colorls.sh
 ```
 
 The script installs `ruby` and the JetBrains Mono Nerd Font with pacman, then
-`ruby-colorls` from the AUR with yay (review the PKGBUILD when yay asks). It
+`ruby-colorls` from the AUR with yay (review the PKGBUILD when yay asks).
+colorls 1.5.0 requires `unicode-display_width` below 3.0, while pacman installs
+3.x, so colorls exits with `Could not find 'unicode-display_width' (>= 1.7, < 3.0)`
+and `ls` stops working. When colorls fails to start, the script offers
+`gem install --user-install unicode-display_width -v '~> 2.6'`, which places 2.x in
+`~/.local/share/gem` for colorls while the system package stays at 3.x. It
 installs `~/.config/shell/colorls.sh` and appends one guarded line to `~/.bashrc`
 and, if present, `~/.zshrc`, after backing each file up. The bundled `zsh/zshrc`
 already contains that line.
