@@ -9,4 +9,8 @@ return {
 		"MarkdownPreview",
 		"MarkdownPreviewStop",
 	},
+	keys = {
+		-- <leader>mp is Conform's format key and <leader>md renders inside Neovim; mb = browser.
+		{ "<leader>mb", "<cmd>MarkdownPreviewToggle<cr>", ft = "markdown", desc = "Toggle Markdown browser preview" },
+	},
 }
