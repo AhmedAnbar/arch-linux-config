@@ -1019,6 +1019,9 @@ Servers whose nvim-lspconfig `cmd` is a function (`ts_ls`, `jsonls`, `html`, `cs
 they are skipped in silence and TypeScript buffers answer go-to-definition with
 `server does not support textDocument/definition`.
 
+Tailwind class completion comes from `tailwindcss-language-server`; `cmp-tw2css` is
+offered only in `css`, `scss`, `sass` and `less` buffers, because it errors elsewhere.
+
 Formatting uses Conform only (Pint for PHP, blade-formatter for Blade); the old
 duplicate formatting hooks were removed. LSP setup uses the current Neovim API.
 Tree-sitter/textobjects retain the legacy `master` API for the old integrations.
