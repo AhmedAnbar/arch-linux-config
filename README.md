@@ -97,6 +97,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 💾 | `grub-btrfs` | Installer | Integrate Btrfs snapshots into GRUB menus; configuration remains manual. |
 | ⚙️ | `gsettings-desktop-schemas` | Installer | Desktop preference schemas used for dark-mode settings. |
 | 📁 | `gvfs` | Installer | Virtual filesystem implementation for GIO. |
+| 🌐 | `inetutils` | Installer | Common network programs; provides `hostname`, which Arch does not install by default. |
 | 🖥️ | `i3-wm` | Installer | Tiling window manager with the bundled gaps and keybindings. |
 | 🔒 | `i3lock` | Installer | Improved screenlocker based upon XCB and PAM. |
 | 🖥️ | `i3status` | Installer | Generates status bar to use with i3bar, dzen2 or xmobar. |

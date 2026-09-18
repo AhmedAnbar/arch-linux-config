@@ -54,7 +54,7 @@ group 'Core i3 desktop and all configuration dependencies' i3-wm i3status i3lock
 group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages)' pipewire pipewire-alsa pipewire-jack pipewire-pulse wireplumber alsa-utils
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils retext
-group 'Development and command-line utilities (including PHP/Composer, uv and mkcert)' base-devel git github-cli vim neovim dialog php composer curl openssh uv mkcert nss
+group 'Development and command-line utilities (including PHP/Composer, uv and mkcert)' base-devel git github-cli vim neovim dialog php composer curl openssh uv mkcert nss inetutils
 group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
