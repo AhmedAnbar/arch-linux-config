@@ -104,7 +104,6 @@ return {
 					{ name = "laravel" },
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
-					{ name = "cmp-tw2css" },
 					{ name = "dotenv" },
 					{
 						name = "emmet_vim",
@@ -149,6 +148,18 @@ return {
 				experimental = {
 					ghost_text = true,
 				},
+			})
+			-- cmp-tw2css expects a stylesheet Tree-sitter tree and errors with
+			-- "attempt to index local 'tree'" elsewhere (for example in .tsx), so offer it
+			-- only where it works. Tailwind class completion comes from tailwindcss-language-server.
+			cmp.setup.filetype({ "css", "scss", "sass", "less" }, {
+				sources = cmp.config.sources({
+					{ name = "cmp-tw2css" },
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "buffer" },
+					{ name = "path" },
+				}),
 			})
 		end,
 	},
