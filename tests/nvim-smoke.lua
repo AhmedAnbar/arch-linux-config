@@ -63,6 +63,16 @@ if ok then
   local phpactor_env = (vim.lsp.config.phpactor or {}).cmd_env or {}
   assert((phpactor_env.PHP_INI_SCAN_DIR or ""):find("phpactor/php.d", 1, true),
     "phpactor must load its iconv ini through PHP_INI_SCAN_DIR")
+  -- nvim-lspconfig ships some cmd values as functions; an enable guard that only understands
+  -- lists silently skips those servers, which killed go-to-definition in TypeScript buffers.
+  for name, binary in pairs({
+    ts_ls = "typescript-language-server", jsonls = "vscode-json-language-server",
+    html = "vscode-html-language-server", tailwindcss = "tailwindcss-language-server",
+    svelte = "svelteserver",
+  }) do
+    if vim.fn.executable(binary) == 1 then
+      assert(vim.lsp.is_enabled(name), name .. " is installed (" .. binary .. ") but not enabled")
+    end
   end
   assert(vim.fn.exists(":DevdocsOpen") == 2, "Devdocs command missing")
   vim.api.nvim_exec_autocmds("InsertEnter", {})

@@ -30,10 +30,22 @@ return {
       } } },
       tailwindcss = { init_options = { userLanguages = { blade = "html" } } },
     }
+    -- nvim-lspconfig defines some cmd values as functions (version probing), so the binary
+    -- cannot be read from the table; name it here or those servers are skipped in silence.
+    local binaries = {
+      cssls = "vscode-css-language-server",
+      html = "vscode-html-language-server",
+      jsonls = "vscode-json-language-server",
+      svelte = "svelteserver",
+      tailwindcss = "tailwindcss-language-server",
+      ts_ls = "typescript-language-server",
+      yamlls = "yaml-language-server",
+    }
     for name, config in pairs(servers) do
       vim.lsp.config(name, config)
       local cmd = vim.lsp.config[name].cmd
-      if type(cmd) == "table" and vim.fn.executable(cmd[1]) == 1 then vim.lsp.enable(name) end
+      local binary = type(cmd) == "table" and cmd[1] or binaries[name]
+      if binary and vim.fn.executable(binary) == 1 then vim.lsp.enable(name) end
     end
     -- Official Laravel server; never attach to unrelated PHP projects.
     local laravel_cmd = vim.fn.exepath("laravel-lsp")
