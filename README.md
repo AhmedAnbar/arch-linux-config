@@ -1013,6 +1013,11 @@ stays untouched and other PHP tools are unaffected. PHPActor is also rooted at t
 nearest `composer.json` or `.phpactor.json` rather than the repository root, so in a
 monorepo it indexes one application instead of crawling `node_modules` and sibling apps.
 
+Servers whose nvim-lspconfig `cmd` is a function (`ts_ls`, `jsonls`, `html`, `cssls`,
+`yamlls`, `svelte`, `tailwindcss`) cannot have their binary read from a table, so
+`lspconfig.lua` names those binaries explicitly before enabling them. Without that,
+they are skipped in silence and TypeScript buffers answer go-to-definition with
+`server does not support textDocument/definition`.
 
 Formatting uses Conform only (Pint for PHP, blade-formatter for Blade); the old
 duplicate formatting hooks were removed. LSP setup uses the current Neovim API.
