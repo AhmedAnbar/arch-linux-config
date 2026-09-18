@@ -1004,6 +1004,16 @@ PATH and the standard Composer global bin locations. Restart Neovim after
 installing servers. Only open trusted projects: Laravel tooling can execute PHP
 and generate helpers in the project's vendor directory.
 
+PHPActor's phar refuses to start without PHP's `iconv` extension, which Arch's `php`
+package ships but leaves disabled; Neovim otherwise reports `Client phpactor quit with
+exit code 1` and `lsp.log` shows `symfony/polyfill-mbstring requires the extension
+"iconv"`. The bundle installs `~/.config/phpactor/php.d/iconv.ini`, and `lspconfig.lua`
+points phpactor's own processes at it with `PHP_INI_SCAN_DIR`, so the global `php.ini`
+stays untouched and other PHP tools are unaffected. PHPActor is also rooted at the
+nearest `composer.json` or `.phpactor.json` rather than the repository root, so in a
+monorepo it indexes one application instead of crawling `node_modules` and sibling apps.
+
+
 Formatting uses Conform only (Pint for PHP, blade-formatter for Blade); the old
 duplicate formatting hooks were removed. LSP setup uses the current Neovim API.
 Tree-sitter/textobjects retain the legacy `master` API for the old integrations.

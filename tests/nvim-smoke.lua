@@ -58,6 +58,12 @@ if ok then
   assert(vim.g.mapleader == " ", "Leader should be Space")
   assert(vim.fn.maparg(" ?", "n") ~= "", "Space + ? is missing")
   assert(vim.lsp.config.laravel_lsp.filetypes[2] == "blade", "Laravel/Blade LSP missing")
+  -- phpactor's phar refuses to start without iconv; it is enabled for phpactor's own
+  -- processes through PHP_INI_SCAN_DIR instead of the global php.ini.
+  local phpactor_env = (vim.lsp.config.phpactor or {}).cmd_env or {}
+  assert((phpactor_env.PHP_INI_SCAN_DIR or ""):find("phpactor/php.d", 1, true),
+    "phpactor must load its iconv ini through PHP_INI_SCAN_DIR")
+  end
   assert(vim.fn.exists(":DevdocsOpen") == 2, "Devdocs command missing")
   vim.api.nvim_exec_autocmds("InsertEnter", {})
   -- Exercise both keymap menus, not just their registration.

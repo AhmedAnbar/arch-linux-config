@@ -10,7 +10,17 @@ return {
       bashls = {}, clangd = {}, cssls = {}, graphql = {}, html = {},
       vue_ls = {}, emmet_language_server = {}, svelte = {}, rust_analyzer = {},
       marksman = {}, prismals = {}, sqlls = {}, yamlls = {}, htmx = {},
-      phpactor = {},
+      -- The phar requires iconv, which the system php.ini leaves disabled. It is loaded through
+      -- PHP_INI_SCAN_DIR (~/.config/phpactor/php.d) so phpactor's own subprocesses, such as
+      -- diagnostics, get it too, without changing the global PHP configuration.
+      phpactor = {
+        cmd_env = { PHP_INI_SCAN_DIR = ":" .. vim.fn.expand("~/.config/phpactor/php.d") },
+        -- Root at the nearest PHP project (apps/api in a monorepo), not the repository root, so
+        -- the indexer does not crawl node_modules and other applications.
+        root_dir = function(bufnr, on_dir)
+          on_dir(vim.fs.root(bufnr, { "composer.json", ".phpactor.json" }) or vim.fs.root(bufnr, ".git") or vim.fn.getcwd())
+        end,
+      },
       gopls = { settings = { gopls = { completeUnimported = true, staticcheck = true } } },
       ts_ls = {},
       jsonls = { settings = { json = { schemas = require("anbar.plugins.settings.jsonls"), validate = { enable = true } } } },
