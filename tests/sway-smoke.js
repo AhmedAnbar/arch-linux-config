@@ -21,6 +21,10 @@ const bar = JSON.parse(read('sway/config/waybar/config.jsonc'));
 assert.equal(bar.position, 'top');
 assert.ok(bar['modules-right'].includes('sway/language'));
 assert.ok(!bar['modules-right'].includes('pulseaudio'), 'Keep the removed volume applet absent');
+// Waybar 0.15 formats with std::chrono: glibc's %-I is rejected and the clock silently disappears.
+assert.match(bar.clock.format, /%I:%M %p/, 'Use a 12-hour clock');
+assert.doesNotMatch(bar.clock.format, /%-/, 'No-padding flags hide the clock');
+assert.match(bar.clock['tooltip-format'], /\{calendar\}/, 'Show a calendar on hover');
 const packages = read('sway/packages.txt').trim().split('\n');
 assert.equal(new Set(packages).size, packages.length, 'No duplicate packages');
 for (const pkg of packages) {
