@@ -21,6 +21,7 @@
 - Compact i3 gaps (6px between windows, 4px outer), 1px dark borders, a top status bar, and Picom rounded corners.
 - Optional Sway/Wayland session with matching colors and gaps, a top Waybar, native touch input, and English/Arabic layouts; i3 stays available.
 - Compact Wi-Fi, CPU, RAM, disk, battery, and clock readouts with warning colors.
+- 12-hour clock (`Sat 19 Sep  |  09:49 PM`); hover it for a month calendar, scroll to change month, right-click for a year view, middle-click to return to today.
 - Rofi with Catppuccin, Nord, and Dracula themes.
 - Flameshot screenshots, Arabic-capable Noto fonts, and GTK dark preferences.
 - Bluetooth and network tray applets, PipeWire audio, and two-finger scrolling.
