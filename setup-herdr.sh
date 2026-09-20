@@ -30,12 +30,32 @@ configure_prefix() {
         fi
     fi
 }
+status_source="$bundle_dir/config/herdr/workspaces-status.sh"
+configure_ui() {
+    local config_dir=${XDG_CONFIG_HOME:-$HOME/.config}/herdr
+    local config_path=${HERDR_CONFIG_PATH:-$config_dir/config.toml}
+    local status_path=$config_dir/workspaces-status.sh
+    command -v jq >/dev/null || {
+        printf 'The workspace tab row needs jq. Install it first: sudo pacman -Syu --needed jq\n'
+        return 0
+    }
+    if ask 'Hide the Herdr sidebar and list workspaces in the tab row instead?'; then
+        if "$dry_run"; then
+            printf 'Would install -Dm755 -- %s %s\n' "$status_source" "$status_path"
+            printf 'Would set only the [ui] sidebar and tab_bar_right keys in %s.\n' "$config_path"
+        else
+            install -Dm755 -- "$status_source" "$status_path"
+            bash "$bundle_dir/scripts/configure-herdr-ui.sh" "$config_path" "$existing" "$status_path"
+        fi
+    fi
+}
 existing=$(command -v herdr || :)
 if [[ -x "$install_dir/herdr" ]]; then existing="$install_dir/herdr"; fi
 if [[ -n "$existing" ]]; then
     printf 'Herdr already installed at %s; leaving the binary unchanged.\n' "$existing"
     if ! "$dry_run"; then "$existing" --version; fi
     configure_prefix
+    configure_ui
     exit 0
 fi
 if [[ -e "$install_dir/herdr" || -L "$install_dir/herdr" ]]; then
@@ -49,6 +69,7 @@ if "$dry_run"; then
     printf 'Would syntax-check it, ask before execution, and run it with HERDR_INSTALL_DIR=%s.\n' "$install_dir"
     printf 'No download, installation or background process is performed in preview mode.\n'
     configure_prefix
+    configure_ui
     exit 0
 fi
 for tool in curl awk sha256sum; do
@@ -76,5 +97,6 @@ HERDR_INSTALL_DIR="$install_dir" sh "$installer_file"
 "$install_dir/herdr" --version
 existing="$install_dir/herdr"
 configure_prefix
+configure_ui
 printf 'Installed. The bundled Zsh configuration already includes ~/.local/bin in PATH.\n'
 printf 'Open a new terminal and run herdr when ready; no Herdr server or agents were started here.\n'
