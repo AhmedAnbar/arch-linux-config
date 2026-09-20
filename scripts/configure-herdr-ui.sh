@@ -39,4 +39,5 @@ if [[ -f "$target" ]]; then
 fi
 mv -- "$staged" "$target"
 printf 'The sidebar is hidden and the tab row lists workspaces. Reload config in an open client.\n'
+printf 'Navigate with prefix+shift+1..9, prefix+alt+n / prefix+alt+p, or the prefix+w picker.\n'
 printf 'Prefix+b still toggles the sidebar back into view when needed.\n'
