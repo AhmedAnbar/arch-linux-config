@@ -556,6 +556,30 @@ For a running session, use `herdr server reload-config`; if the attached client
 still uses its old prefix, select **reload config** in Herdr's global menu to
 reload the client settings too. Do not stop the server or close your panes.
 
+### Workspaces as tabs
+
+A second optional prompt hides the workspace sidebar and lists the workspaces in
+the tab row instead, tmux style: `1:Projects*  2:nuvora`, with `*` marking the
+focused workspace. It needs `jq`, and installs
+[`config/herdr/workspaces-status.sh`](config/herdr/workspaces-status.sh) to
+`~/.config/herdr/workspaces-status.sh`, then sets only these keys:
+
+```toml
+[ui]
+sidebar_start_collapsed = true
+sidebar_collapsed_mode = "hidden"
+tab_bar_right = [{ type = "command", command = "~/.config/herdr/workspaces-status.sh", interval_seconds = 1, timeout_seconds = 2 }]
+tab_bar_right_separator = "  "
+```
+
+Other `[ui]` keys, comments and tables are preserved, the config is backed up
+before any change, and a managed key written as a multi-line array is reported
+instead of rewritten. **Prefix+b** still toggles the sidebar back when you want
+it. Herdr keeps only the last line of a status command and strips escape
+sequences, so the script prints one plain line; it re-runs once a second, taking
+about 6 ms.
+
+
 Developer checks: `node tests/herdr-smoke.js` (Node.js and Herdr required).
 These use temporary config files to test preservation, validation, backups and
 repeat runs; no live sessions are modified.
