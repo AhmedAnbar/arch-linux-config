@@ -70,6 +70,8 @@ try {
         '[ui.toast]\ndelivery = "system"\n',
         // Stale values of the managed keys are replaced, not duplicated.
         '[ui]\nsidebar_collapsed_mode = "compact"\nsidebar_start_collapsed = false\n',
+        // An existing [keys] table keeps its prefix and gains the navigation keys.
+        '[keys]\nprefix = "ctrl+a"\n\n[theme]\nname = "catppuccin"\n',
         null,
     ]) {
         const file = fixture(source);
@@ -87,6 +89,14 @@ try {
         }
         if (source && source.includes('catppuccin')) assert.match(updated, /name = "catppuccin"/);
         if (source && source.includes('delivery')) assert.match(updated, /delivery = "system"/);
+        // prefix+1..9 belongs to tabs, so workspaces must not steal it.
+        assert.match(updated, /^switch_workspace = "prefix\+shift\+1\.\.9"$/m);
+        assert.match(updated, /^next_workspace = "prefix\+alt\+n"$/m);
+        assert.match(updated, /^previous_workspace = "prefix\+alt\+p"$/m);
+        assert.equal(updated.match(/^\[keys\]$/gm).length, 1, 'One [keys] table only');
+        assert.equal(updated.match(/^next_workspace/gm).length, 1, 'No duplicated keys');
+        assert.doesNotMatch(updated, /^switch_workspace = "prefix\+1/m);
+        if (source && source.includes('prefix = "ctrl+a"')) assert.match(updated, /prefix = "ctrl\+a"/);
         const beforeSecondRun = fs.readdirSync(scratch).sort();
         assert.equal(applyUi(file).status, 0);
         assert.equal(fs.readFileSync(file, 'utf8'), updated, 'A second run must change nothing');
@@ -104,6 +114,24 @@ try {
     fs.symlinkSync(uiOriginal, uiLink);
     assert.notEqual(applyUi(uiLink).status, 0);
     assert.equal(fs.readFileSync(uiOriginal, 'utf8'), '[theme]\nname = "catppuccin"\n');
+
+    // The prefix step and the workspace-tab step must not undo each other.
+    const both = fixture('onboarding = false\n');
+    assert.equal(applyUi(both).status, 0);
+    assert.equal(apply(both).status, 0);
+    const combined = fs.readFileSync(both, 'utf8');
+    for (const expected of [/prefix = "ctrl\+a"/, /next_workspace = "prefix\+alt\+p"|previous_workspace = "prefix\+alt\+p"/,
+        /sidebar_collapsed_mode = "hidden"/, /tab_bar_right = \[\{ type = "command"/]) {
+        assert.match(combined, expected);
+    }
+    // The prefix step appends its key after ours, so one more pass reorders them once.
+    assert.equal(applyUi(both).status, 0);
+    const settled = fs.readFileSync(both, 'utf8');
+    assert.match(settled, /prefix = "ctrl\+a"\nswitch_workspace/);
+    for (const step of [applyUi, apply, applyUi, apply]) {
+        assert.equal(step(both).status, 0);
+        assert.equal(fs.readFileSync(both, 'utf8'), settled, 'Both steps must leave a settled config alone');
+    }
 
     // The status line itself: one plain line, tmux-style, with the focused workspace starred.
     const sample = JSON.stringify({result: {workspaces: [

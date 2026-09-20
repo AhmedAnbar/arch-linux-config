@@ -572,6 +572,21 @@ tab_bar_right = [{ type = "command", command = "~/.config/herdr/workspaces-statu
 tab_bar_right_separator = "  "
 ```
 
+The same prompt binds the workspace navigation that Herdr leaves unset, keeping
+`prefix+1..9` for tabs:
+
+```toml
+[keys]
+switch_workspace = "prefix+shift+1..9"
+next_workspace = "prefix+alt+n"
+previous_workspace = "prefix+alt+p"
+```
+
+So **Ctrl+A** then **Shift+2** jumps straight to workspace 2, **Ctrl+A Alt+n** and
+**Ctrl+A Alt+p** step through them, and **Ctrl+A w** still opens the picker, where
+**j**/**k** or the arrows move the selection. The tab row is a status readout, not
+a set of buttons: it cannot be clicked.
+
 Other `[ui]` keys, comments and tables are preserved, the config is backed up
 before any change, and a managed key written as a multi-line array is reported
 instead of rewritten. **Prefix+b** still toggles the sidebar back when you want
