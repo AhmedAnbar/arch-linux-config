@@ -134,6 +134,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 🔊 | `pipewire-alsa` | Installer | Low-latency audio/video router and processor - ALSA configuration. |
 | 🔊 | `pipewire-jack` | Installer | Low-latency audio/video router and processor - JACK replacement. |
 | 🔊 | `pipewire-pulse` | Installer | Low-latency audio/video router and processor - PulseAudio replacement. |
+| 📄 | `onlyoffice-bin` | Optional AUR | Office suite for documents, spreadsheets and presentations; official prebuilt binary. |
 | 🧰 | `postman` | Optional AUR | Build and test API requests. |
 | ⚙️ | `psmisc` | Installer | Process utilities including killall, fuser and pstree. |
 | 📝 | `retext` | Installer | Markdown editor; its preview mode is the default viewer for `.md` files. |
@@ -436,6 +437,32 @@ If yay is missing, the AUR section offers to build `yay-bin` after review.
 No default-browser setting, browser profile, or existing Firefox installation is
 changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
 in Rofi after installation.
+
+## ONLYOFFICE
+
+In `bash install.sh`, answer **y** to the optional AUR packages section, then
+**y** to **Install onlyoffice-bin using yay?** The installer uses:
+
+```bash
+yay -S --needed onlyoffice-bin
+```
+
+Use `onlyoffice-bin`, not the `onlyoffice` source package. The source package
+build-depends on `nodejs-lts-iron`, which conflicts with `nodejs`, so `yay -S
+onlyoffice` ends in:
+
+```
+:: nodejs-lts-iron and nodejs are in conflict. Remove nodejs? [y/N]
+error: unresolvable package conflicts detected
+```
+
+Answering **y** there would uninstall the current Node.js, together with `npm`
+and anything depending on it. `onlyoffice-bin` is ONLYOFFICE's own compiled
+release, needs no Node.js at all, and provides `onlyoffice`. Run
+`onlyoffice-desktopeditors`, or choose ONLYOFFICE in Rofi.
+
+Both packages use the same name upstream and conflict with each other, so
+uninstall one before switching: `yay -Rns onlyoffice` then `yay -S onlyoffice-bin`.
 
 ## Private SSH aliases
 

@@ -102,7 +102,9 @@ if ask 'Select optional AUR packages, including Google Chrome (review third-part
         if ask 'Install Google Chrome (google-chrome) using yay?'; then
             aur+=(google-chrome)
         fi
-        for package in dropbox postman tor-browser timeshift-autosnap zramd teams; do
+        # onlyoffice-bin only: the source package build-depends on nodejs-lts-iron,
+        # which conflicts with the nodejs package and would uninstall it.
+        for package in dropbox postman tor-browser timeshift-autosnap zramd teams onlyoffice-bin; do
             if ask "Install $package using yay?"; then aur+=("$package"); fi
         done
         if ((${#aur[@]})); then run yay -S --needed "${aur[@]}"; fi
