@@ -52,7 +52,7 @@ assert.doesNotMatch(legacy.stdout, / -> ssh:/);
 // The main installer must propagate dry-run mode to the new opt-in step.
 const main = spawnSync('bash', [path.resolve(__dirname, '../install.sh'), '--dry-run'], {
     encoding: 'utf8', timeout: 10000,
-    input: [...Array(28).fill('n'), 'y', ...gitAnswers, ...Array(10).fill('n')].join('\n') + '\n',
+    input: [...Array(29).fill('n'), 'y', ...gitAnswers, ...Array(10).fill('n')].join('\n') + '\n',
 });
 assert.equal(main.status, 0, main.stderr);
 assert.match(main.stdout, /Git URL rewrite: https:\/\/gitlab\.example\.test\/ -> ssh:\/\/git@gitlab\.example\.test\//);

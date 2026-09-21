@@ -76,6 +76,7 @@ come from older notes and may be unavailable; they are not prerequisites.
 | 📊 | `conky` | Conky panel | Light-weight system monitor for X, Wayland, and other things, too. |
 | 🖨️ | `cups` | Installer | OpenPrinting CUPS - daemon package. |
 | 🌐 | `curl` | Installer / Neovim | Transfer data and download official installers, including Herdr and Rustup. |
+| 🗄️ | `dbeaver` | DBeaver group | Universal SQL client for developers and database administrators. |
 | 🖥️ | `dex` | Installer | Program to generate and execute DesktopEntry files of type Application. |
 | 💬 | `dialog` | Installer | A tool to display dialog boxes from shell scripts. |
 | 💬 | `discord` | Optional applications | Voice, video and text chat. |
@@ -437,6 +438,23 @@ If yay is missing, the AUR section offers to build `yay-bin` after review.
 No default-browser setting, browser profile, or existing Firefox installation is
 changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
 in Rofi after installation.
+
+## DBeaver
+
+`dbeaver` comes from the official `extra` repository, so it needs no AUR helper.
+It has its own installer prompt, **DBeaver database client (pacman may ask which
+java-runtime provider to use)**, because it depends on `java-runtime>=21` and
+pulls roughly 300 MB with that runtime. If several providers are installed or
+available, pacman asks which one to use; any of them works, and an existing
+`jdk-openjdk` or `jre-openjdk` already satisfies it.
+
+```bash
+sudo pacman -S --needed dbeaver
+```
+
+Launch it with `dbeaver`, or choose DBeaver in Rofi. Connection settings and
+saved passwords live in `~/.local/share/DBeaverData`, which is personal state
+and is deliberately not part of this repository.
 
 ## ONLYOFFICE
 
