@@ -23,8 +23,10 @@ const families = (pattern, env) => {
     return result.stdout.trim().split('\n');
 };
 try {
-    // The bug being fixed: Arabic in a generic family resolves to Kufi's display letterforms.
-    assert.equal(families('sans-serif:lang=ar', without)[0], 'Noto Kufi Arabic');
+    // The bug being fixed: without this config, Arabic in a generic family resolves to
+    // whichever face fontconfig happens to rank first (Noto Kufi's display letterforms,
+    // or DejaVu Sans once a Java runtime pulls in ttf-dejavu) instead of an Arabic text face.
+    assert.doesNotMatch(families('sans-serif:lang=ar', without)[0], /Noto (Sans|Naskh) Arabic/);
 
     // Latin face first (Latin rendering unchanged), Arabic text face immediately after.
     for (const [generic, latin, arabic] of [

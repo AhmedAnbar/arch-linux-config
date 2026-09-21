@@ -55,6 +55,8 @@ group 'PipeWire audio (pacman may ask to replace conflicting PulseAudio packages
 group 'Laptop brightness keys and emoji picker' brightnessctl rofi-emoji noto-fonts-emoji xclip
 group 'Browser and file utilities' firefox thunar thunar-archive-plugin file-roller gvfs gpicview xdg-user-dirs xdg-utils retext
 group 'Development and command-line utilities (including PHP/Composer, uv and mkcert)' base-devel git github-cli vim neovim dialog php composer curl openssh uv mkcert nss inetutils
+# Separate group: DBeaver pulls a Java runtime, so it stays easy to decline.
+group 'DBeaver database client (pacman may ask which java-runtime provider to use)' dbeaver
 group 'Docker Engine, Compose and lazydocker' docker docker-compose lazydocker
 group 'LightDM login screen' lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 group 'Printing' cups
