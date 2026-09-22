@@ -12,4 +12,4 @@ while [ -e "$file" ]; do
     n=$((n + 1))
     file=$dir/scratch-$n.md
 done
-exec kitty --class notes-scratchpad nvim -- "$file"
+exec kitty --class notes-scratchpad nvim -S "${0%/*}/notes.lua" -- "$file"
