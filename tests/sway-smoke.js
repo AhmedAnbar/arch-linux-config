@@ -53,7 +53,8 @@ assert.doesNotMatch(notes, /bindsym \$mod\+n\b/);
             check(result);
             return result.stdout.trim();
         };
-        const opens = (name) => `--class notes-scratchpad nvim -- ${path.join(dir, name)}`;
+        const opens = (name) =>
+            `--class notes-scratchpad nvim -S ${path.join(root, 'sway/config/sway/notes.lua')} -- ${path.join(dir, name)}`;
         stub('swaymsg', 'exit 2'); // no notes window yet
         assert.equal(press(), opens('scratch.md'));
         assert.ok(fs.statSync(dir).isDirectory(), 'The notes folder is created on demand');
@@ -65,6 +66,39 @@ assert.doesNotMatch(notes, /bindsym \$mod\+n\b/);
         assert.equal(press(), opens('scratch-3.md'));
         stub('swaymsg', 'exit 0'); // an open window is toggled, never duplicated
         assert.equal(press(), '');
+
+        // Rename on first save, driven by a real headless Neovim with scripted input() answers.
+        const probe = path.join(scratch, 'probe.lua');
+        fs.writeFileSync(probe, `
+            local answers = vim.split(os.getenv('ANSWERS'), ',', {plain = true})
+            local prompts = 0
+            vim.fn.input = function() prompts = prompts + 1; return table.remove(answers, 1) or '' end
+            vim.cmd.source(os.getenv('NOTES_LUA'))
+            for _, text in ipairs({'first', 'second'}) do
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {text})
+                vim.cmd('silent write')
+            end
+            io.stdout:write(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':t'), ' ', prompts, ' ',
+                #vim.fn.getbufinfo(), '\\n')
+            vim.cmd('qa!')`);
+        const saveAs = (file, answers) => {
+            const result = run('nvim', ['--headless', '--clean', '-S', probe, '--', path.join(dir, file)], {env: {
+                ...process.env, ANSWERS: answers, NOTES_LUA: path.join(root, 'sway/config/sway/notes.lua'),
+            }});
+            if (result.error) return null; // Neovim is optional for this check
+            check(result);
+            return result.stdout.trim();
+        };
+        const renamed = saveAs('scratch-7.md', 'meeting');
+        if (renamed !== null) {
+            // Asked once, one buffer left (no stale old name), and the later :w raised no E13.
+            assert.equal(renamed, 'meeting.md 1 1');
+            assert.equal(fs.readFileSync(path.join(dir, 'meeting.md'), 'utf8'), 'second\n');
+            assert.ok(!fs.existsSync(path.join(dir, 'scratch-7.md')), 'The scratch name is released');
+            assert.equal(saveAs('scratch-8.md', ''), 'scratch-8.md 1 1', 'Enter keeps the name');
+            assert.equal(saveAs('scratch-9.md', 'meeting,a/b'), 'a-b.md 2 1', 'A taken name asks again; / is made safe');
+            assert.equal(saveAs('journal.md', 'x'), 'journal.md 0 1', 'Only scratch notes are asked about');
+        }
     } finally {
         fs.rmSync(scratch, {recursive: true, force: true});
     }

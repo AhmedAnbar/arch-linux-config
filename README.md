@@ -453,6 +453,15 @@ and the next **Alt+`** starts the next one. A note closed with `:q` before any
 leaving empty files behind. `~/notes` is created when needed; set `NOTES_DIR` to
 use another folder.
 
+The first time a scratch note is saved, a floating **Rename note** box appears
+(drawn by noice.nvim). Type a name and press Enter to save it under that name in
+the same folder; `.md` is added when no extension is given and `/` becomes `-`.
+Press Enter on an empty box, or Esc, to keep the scratch name. It asks only once
+per note, a name that is already taken asks again, and `:wq` works too: the box
+appears before Neovim quits. Run `:NoteRename` to rename a note later. This
+behaviour comes from [`sway/config/sway/notes.lua`](sway/config/sway/notes.lua),
+loaded only in the notes window, so Neovim elsewhere is unchanged.
+
 It lives in [`sway/config/sway/config.d/40-notes.conf`](sway/config/sway/config.d/40-notes.conf)
 and [`sway/config/sway/notes.sh`](sway/config/sway/notes.sh), and is installed with the rest of the Sway configuration. kitty's `--class` sets
 the Wayland `app_id` that the window rule and the toggle both match. Closing it
