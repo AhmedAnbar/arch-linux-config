@@ -442,14 +442,19 @@ in Rofi after installation.
 ## Notes scratchpad (Sway)
 
 Press **Alt+`** (the key left of 1) for a floating notes window: kitty running
-Neovim on `~/notes/scratch.md`, 60% of the screen and centred. Press it again to
-hide it and again to bring it back; Neovim keeps running in between, so text and
-cursor position survive. Save with `:w`, and **Space m d** renders the Markdown.
-If the window is closed, the next **Alt+`** opens a fresh one and creates
-`~/notes` when needed.
+Neovim, 60% of the screen and centred. Press it again to hide it and again to
+bring it back; Neovim keeps running in between, so text and cursor position
+survive. Save with `:w`, and **Space m d** renders the Markdown.
+
+Every new window is a new note in `~/notes`, named after the first unused name in
+`scratch.md`, `scratch-1.md`, `scratch-2.md`, and so on. So `:wq` keeps that note
+and the next **Alt+`** starts the next one. A note closed with `:q` before any
+`:w` is never written, so its name is simply offered again next time instead of
+leaving empty files behind. `~/notes` is created when needed; set `NOTES_DIR` to
+use another folder.
 
 It lives in [`sway/config/sway/config.d/40-notes.conf`](sway/config/sway/config.d/40-notes.conf)
-and is installed with the rest of the Sway configuration. kitty's `--class` sets
+and [`sway/config/sway/notes.sh`](sway/config/sway/notes.sh), and is installed with the rest of the Sway configuration. kitty's `--class` sets
 the Wayland `app_id` that the window rule and the toggle both match. Closing it
 with **Alt+Shift+q** makes kitty ask first, because Neovim is still running;
 that prompt protects unsaved notes, so quit with `:wq` instead. **Alt+n** was
