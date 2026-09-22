@@ -36,8 +36,39 @@ const config = read('sway/config/sway/config');
 // because sway would swallow it before Herdr's prefix+alt+n.
 const notes = read('sway/config/sway/config.d/40-notes.conf');
 assert.match(notes, /^for_window \[app_id="notes-scratchpad"\] floating enable,.* move scratchpad, scratchpad show$/m);
-assert.match(notes, /^bindsym \$mod\+grave exec sh -c 'swaymsg "\[app_id=notes-scratchpad\] scratchpad show" \|\| \{ mkdir -p ~\/notes && exec kitty --class notes-scratchpad nvim ~\/notes\/scratch\.md; \}'$/m);
+assert.match(notes, /^bindsym \$mod\+grave exec sh ~\/\.config\/sway\/notes\.sh$/m);
 assert.doesNotMatch(notes, /bindsym \$mod\+n\b/);
+{
+    // Every window closed with :q starts a new note; unsaved names are reused.
+    const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'anbar-notes-smoke-'));
+    try {
+        const bin = path.join(scratch, 'bin');
+        const dir = path.join(scratch, 'notes');
+        fs.mkdirSync(bin);
+        const stub = (name, body) => fs.writeFileSync(path.join(bin, name), '#!/bin/sh\n' + body + '\n', {mode: 0o755});
+        stub('kitty', 'printf "%s\\n" "$*"');
+        const press = () => {
+            const result = run('sh', [path.join(root, 'sway/config/sway/notes.sh')],
+                {env: {...process.env, NOTES_DIR: dir, PATH: `${bin}:${process.env.PATH}`}});
+            check(result);
+            return result.stdout.trim();
+        };
+        const opens = (name) => `--class notes-scratchpad nvim -- ${path.join(dir, name)}`;
+        stub('swaymsg', 'exit 2'); // no notes window yet
+        assert.equal(press(), opens('scratch.md'));
+        assert.ok(fs.statSync(dir).isDirectory(), 'The notes folder is created on demand');
+        assert.equal(press(), opens('scratch.md'), 'A note quit without :w keeps its name');
+        fs.writeFileSync(path.join(dir, 'scratch.md'), 'saved');
+        assert.equal(press(), opens('scratch-1.md'));
+        fs.writeFileSync(path.join(dir, 'scratch-1.md'), '');
+        fs.writeFileSync(path.join(dir, 'scratch-2.md'), '');
+        assert.equal(press(), opens('scratch-3.md'));
+        stub('swaymsg', 'exit 0'); // an open window is toggled, never duplicated
+        assert.equal(press(), '');
+    } finally {
+        fs.rmSync(scratch, {recursive: true, force: true});
+    }
+}
 assert.match(config, /xkb_layout us,ara/);
 assert.match(config, /xkb_options grp:shift_caps_toggle/);
 assert.match(config, /scroll_method two_finger/);
