@@ -32,6 +32,12 @@ for (const pkg of packages) {
     assert.ok(read('README.md').includes('`' + pkg + '`'), 'Missing package documentation: ' + pkg);
 }
 const config = read('sway/config/sway/config');
+// Notes scratchpad: one app_id ties the window rule to the toggle, and Alt+n stays free
+// because sway would swallow it before Herdr's prefix+alt+n.
+const notes = read('sway/config/sway/config.d/40-notes.conf');
+assert.match(notes, /^for_window \[app_id="notes-scratchpad"\] floating enable,.* move scratchpad, scratchpad show$/m);
+assert.match(notes, /^bindsym \$mod\+grave exec sh -c 'swaymsg "\[app_id=notes-scratchpad\] scratchpad show" \|\| \{ mkdir -p ~\/notes && exec kitty --class notes-scratchpad nvim ~\/notes\/scratch\.md; \}'$/m);
+assert.doesNotMatch(notes, /bindsym \$mod\+n\b/);
 assert.match(config, /xkb_layout us,ara/);
 assert.match(config, /xkb_options grp:shift_caps_toggle/);
 assert.match(config, /scroll_method two_finger/);
