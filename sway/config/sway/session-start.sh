@@ -13,9 +13,10 @@ nm-applet --indicator &
 blueman-applet &
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
+# No idle locking: the screen only goes black, and Alt+l locks when you want it.
+# before-sleep and lock stay, so suspend and loginctl lock-session still lock.
 exec swayidle -w \
-    timeout 300 'sh ~/.config/sway/lock.sh' \
-    timeout 600 'swaymsg "output * power off"' \
+    timeout 300 'swaymsg "output * power off"' \
         resume 'swaymsg "output * power on"' \
     before-sleep 'sh ~/.config/sway/lock.sh' \
     lock 'sh ~/.config/sway/lock.sh'

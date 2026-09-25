@@ -201,7 +201,7 @@ standalone setup. It never removes an existing desktop.
 | 📐 | `slurp` | Select a screen region for screenshots and sharing. |
 | 🖥️ | `sway` | Wayland tiling compositor with familiar i3-style controls. |
 | 🎨 | `swaybg` | Draw the Sway desktop background. |
-| 💤 | `swayidle` | Lock on inactivity or before sleep and power down idle screens. |
+| 💤 | `swayidle` | Blank idle screens, and lock before sleep or on a lock request. |
 | 🔒 | `swaylock` | Lock the Wayland session using your normal login password. |
 | 📊 | `waybar` | Top status bar with workspaces, keyboard language, system stats and tray. |
 | 📋 | `wl-clipboard` | Native Wayland clipboard for screenshots and emoji. |
@@ -438,6 +438,27 @@ If yay is missing, the AUR section offers to build `yay-bin` after review.
 No default-browser setting, browser profile, or existing Firefox installation is
 changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
 in Rofi after installation.
+
+## Screen locking and idle
+
+Locking only happens when you ask for it, with **Alt+L** (or Alt+Ctrl+L). After
+five minutes without input the screen goes black and comes back on any key or
+touch, with no password prompt:
+
+```sh
+swayidle -w \
+    timeout 300 'swaymsg "output * power off"' \
+        resume 'swaymsg "output * power on"' \
+    before-sleep 'sh ~/.config/sway/lock.sh' \
+    lock 'sh ~/.config/sway/lock.sh'
+```
+
+`before-sleep` and `lock` stay deliberately: suspend, lid close and
+`loginctl lock-session` still lock, so a closed laptop is not left open. To drop
+those too, remove both lines from
+[`sway/config/sway/session-start.sh`](sway/config/sway/session-start.sh).
+
+The i3 session keeps its own locking setup and is unchanged.
 
 ## Notes scratchpad (Sway)
 
@@ -724,10 +745,11 @@ Select **i3** at the next login to return to the original desktop.
 | Print or Alt+Shift+S | Select a region, save to `Pictures/Screenshots`, and copy PNG |
 | Super+period / ASUS emoji key | Rofi emoji picker; copy then paste into the app |
 | Brightness / volume keys | Adjust display brightness / audio |
-| Alt+Ctrl+L | Lock with Swaylock |
+| Alt+L or Alt+Ctrl+L | Lock with Swaylock; locking is never automatic on idle |
 | Alt+Shift+C or Alt+Shift+R | Reload configuration (not a compositor restart) |
 | Alt+Shift+E | Show logout confirmation |
 
+Alt+L took the key that used to focus the window above, so use **Alt+Up** for that.
 The other workspace, resize, navigation and split shortcuts match i3.
 The Waybar at the top has keyboard language, Wi-Fi, Bluetooth, CPU, RAM, disk,
 battery and a tray. Click the language label to switch; click Bluetooth to pair

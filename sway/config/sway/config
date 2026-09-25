@@ -55,12 +55,13 @@ bindsym --locked XF86MonBrightnessDown exec sh ~/.config/sway/brightness.sh down
 bindsym --locked XF86MonBrightnessUp exec sh ~/.config/sway/brightness.sh up
 bindsym --release Print exec sh ~/.config/sway/screenshot.sh
 bindsym --release $mod+Shift+s exec sh ~/.config/sway/screenshot.sh
+# Locking is manual only; swayidle just blanks the screen. Alt+Control+l still works.
+bindsym $mod+l exec sh ~/.config/sway/lock.sh
 bindsym $mod+Control+l exec sh ~/.config/sway/lock.sh
 
 # Match the existing i3 navigation keys.
 bindsym $mod+j focus left
 bindsym $mod+k focus down
-bindsym $mod+l focus up
 bindsym $mod+semicolon focus right
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
