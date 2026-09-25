@@ -108,6 +108,18 @@ assert.match(config, /xkb_options grp:shift_caps_toggle/);
 assert.match(config, /scroll_method two_finger/);
 assert.match(config, /gaps inner 6/);
 assert.match(config, /gaps outer 4/);
+// Locking is manual: Alt+l locks, and Alt+l must no longer focus the window above.
+assert.match(config, /^bindsym \$mod\+l exec sh ~\/\.config\/sway\/lock\.sh$/m);
+assert.match(config, /^bindsym \$mod\+Control\+l exec sh ~\/\.config\/sway\/lock\.sh$/m);
+assert.doesNotMatch(config, /^bindsym \$mod\+l focus/m, 'Alt+l is the lock key');
+assert.match(config, /^bindsym \$mod\+Up focus up$/m, 'Focus up stays reachable');
+const session = read('sway/config/sway/session-start.sh');
+assert.doesNotMatch(session, /timeout \d+ 'sh ~\/\.config\/sway\/lock\.sh'/, 'No idle locking');
+assert.match(session, /timeout 300 'swaymsg "output \* power off"'/, 'Idle blanks the screen');
+assert.match(session, /resume 'swaymsg "output \* power on"'/);
+// Suspend and loginctl lock-session must still lock.
+assert.match(session, /before-sleep 'sh ~\/\.config\/sway\/lock\.sh'/);
+assert.match(session, /\block 'sh ~\/\.config\/sway\/lock\.sh'/);
 assert.ok(!/^[^#\n]*(?:exec|exec_always)\s+(?:picom|xrandr|xinput|setxkbmap|xss-lock|flameshot)\b/m.test(config));
 check(run('bash', [path.join(root, 'setup-sway.sh'), '--help']));
 assert.equal(run('bash', [path.join(root, 'setup-sway.sh'), '--invalid']).status, 2);
