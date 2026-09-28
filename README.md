@@ -198,6 +198,7 @@ standalone setup. It never removes an existing desktop.
 | 🔐 | `polkit-gnome` | Graphical authentication prompts for privileged desktop actions. |
 | 🖥️ | `qt5-wayland` | Native Wayland integration for Qt 5 applications. |
 | 🖥️ | `qt6-wayland` | Native Wayland integration for Qt 6 applications. |
+| 📋 | `cliphist` | Clipboard history for the Alt+C Rofi picker; stores text and images. |
 | 📐 | `slurp` | Select a screen region for screenshots and sharing. |
 | 🖥️ | `sway` | Wayland tiling compositor with familiar i3-style controls. |
 | 🎨 | `swaybg` | Draw the Sway desktop background. |
@@ -438,6 +439,25 @@ If yay is missing, the AUR section offers to build `yay-bin` after review.
 No default-browser setting, browser profile, or existing Firefox installation is
 changed by selecting Chrome. Run `google-chrome-stable` or choose Google Chrome
 in Rofi after installation.
+
+## Clipboard history (Sway)
+
+**Alt+C** opens the clipboard history in Rofi. Type to filter, press Enter to copy
+the entry back to the clipboard, then paste as usual. **Alt+Delete** inside the
+picker forgets the highlighted entry, which is the quick way to get a password or
+token out of the history. `cliphist wipe` clears everything.
+
+Two watchers started by
+[`sway/config/sway/session-start.sh`](sway/config/sway/session-start.sh) record
+the history, one for text and one for images, because `wl-paste --watch` handles
+a single type per process. They only start when `cliphist` is installed, so the
+session is unaffected before then, and
+[`sway/config/sway/clipboard.sh`](sway/config/sway/clipboard.sh) explains the
+missing package in a notification rather than failing silently.
+
+History lives in `~/.local/share/cliphist/db` and survives reboots, so treat it
+like any other file holding whatever you have copied. The i3 session does not get
+this: `wl-paste` is Wayland-only.
 
 ## Screen locking and idle
 
@@ -742,6 +762,7 @@ Select **i3** at the next login to return to the original desktop.
 | Alt+B | Launch Firefox with native Wayland enabled |
 | Alt+Shift+Q | Close the focused window |
 | Shift+Caps Lock | Toggle English (US) / Arabic; the bar shows the layout |
+| Alt+C | Clipboard history in Rofi; Enter copies, Alt+Delete forgets an entry |
 | Print or Alt+Shift+S | Select a region, save to `Pictures/Screenshots`, and copy PNG |
 | Super+period / ASUS emoji key | Rofi emoji picker; copy then paste into the app |
 | Brightness / volume keys | Adjust display brightness / audio |

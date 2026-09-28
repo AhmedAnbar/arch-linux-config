@@ -114,6 +114,56 @@ assert.match(config, /^bindsym \$mod\+Control\+l exec sh ~\/\.config\/sway\/lock
 assert.doesNotMatch(config, /^bindsym \$mod\+l focus/m, 'Alt+l is the lock key');
 assert.match(config, /^bindsym \$mod\+Up focus up$/m, 'Focus up stays reachable');
 const session = read('sway/config/sway/session-start.sh');
+// Clipboard history: Alt+c picks an entry, and the watchers wait for cliphist.
+assert.match(config, /^bindsym \$mod\+c exec sh ~\/\.config\/sway\/clipboard\.sh$/m);
+assert.match(session, /if command -v cliphist >\/dev\/null; then/);
+for (const type of ['text', 'image']) {
+    assert.match(session, new RegExp(`wl-paste --type ${type} --watch cliphist store &`));
+}
+{
+    // Copy, forget and cancel, against stubbed cliphist/rofi/wl-copy.
+    const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'anbar-clip-smoke-'));
+    try {
+        const bin = path.join(scratch, 'bin');
+        const log = path.join(scratch, 'log');
+        fs.mkdirSync(bin);
+        fs.mkdirSync(path.join(scratch, 'empty'));
+        const stub = (name, body) => fs.writeFileSync(path.join(bin, name), '#!/bin/sh\n' + body + '\n', {mode: 0o755});
+        // Each stub logs one whole line, so concurrent pipeline writes cannot interleave.
+        stub('cliphist', `entry=$(cat 2>/dev/null | tr '\\n' ' ')
+case "$1" in
+  list) printf '1\\thello\\n2\\ttoken\\n' ;;
+  decode) printf 'decoded=[%s]\\n' "$entry" >> "${log}"; printf '%s' "$entry" ;;
+  delete) printf 'deleted=[%s]\\n' "$entry" >> "${log}" ;;
+esac`);
+        stub('rofi', `printf 'listed=[%s]\\n' "$(cat | tr '\\n' ' ')" >> "${log}"
+[ -n "\${STUB_PICK:-}" ] && printf '%s\\n' "$STUB_PICK"; exit "\${STUB_EXIT:-0}"`);
+        stub('wl-copy', `printf 'copied=[%s]\\n' "$(cat | tr '\\n' ' ')" >> "${log}"`);
+        const press = (pick, exit) => {
+            fs.writeFileSync(log, '');
+            const result = run('sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
+                {env: {...process.env, PATH: `${bin}:/usr/bin`, STUB_PICK: pick, STUB_EXIT: String(exit)}});
+            check(result);
+            return fs.readFileSync(log, 'utf8');
+        };
+        // decode and wl-copy run in one pipeline, so only their presence is ordered.
+        const lines = (pick, exit) => press(pick, exit).trim().split('\n').sort();
+        const listed = 'listed=[1\thello 2\ttoken ]';
+        assert.deepEqual(lines('2\ttoken', 0),
+            ['copied=[2\ttoken ]', 'decoded=[2\ttoken ]', listed],
+            'Enter decodes the chosen entry and copies it');
+        assert.deepEqual(lines('2\ttoken', 10), ['deleted=[2\ttoken ]', listed],
+            'Alt+Delete forgets the entry and copies nothing');
+        assert.deepEqual(lines('', 1), [listed], 'Cancelling changes nothing');
+        // Without cliphist the shortcut must explain itself and still succeed.
+        const absent = run('sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
+            {env: {...process.env, PATH: path.join(scratch, 'empty') + ':/usr/bin'}});
+        check(absent);
+        assert.match(absent.stderr, /needs cliphist/);
+    } finally {
+        fs.rmSync(scratch, {recursive: true, force: true});
+    }
+}
 assert.doesNotMatch(session, /timeout \d+ 'sh ~\/\.config\/sway\/lock\.sh'/, 'No idle locking');
 assert.match(session, /timeout 300 'swaymsg "output \* power off"'/, 'Idle blanks the screen');
 assert.match(session, /resume 'swaymsg "output \* power on"'/);
