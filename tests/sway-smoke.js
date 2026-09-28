@@ -132,13 +132,15 @@ for (const type of ['text', 'image']) {
         // Each stub logs one whole line, so concurrent pipeline writes cannot interleave.
         stub('cliphist', `entry=$(cat 2>/dev/null | tr '\\n' ' ')
 case "$1" in
-  list) printf '1\\thello\\n2\\ttoken\\n' ;;
+  list) [ -n "\${STUB_EMPTY:-}" ] || printf '1\\thello\\n2\\ttoken\\n' ;;
   decode) printf 'decoded=[%s]\\n' "$entry" >> "${log}"; printf '%s' "$entry" ;;
   delete) printf 'deleted=[%s]\\n' "$entry" >> "${log}" ;;
 esac`);
         stub('rofi', `printf 'listed=[%s]\\n' "$(cat | tr '\\n' ' ')" >> "${log}"
 [ -n "\${STUB_PICK:-}" ] && printf '%s\\n' "$STUB_PICK"; exit "\${STUB_EXIT:-0}"`);
         stub('wl-copy', `printf 'copied=[%s]\\n' "$(cat | tr '\\n' ' ')" >> "${log}"`);
+        // Exit 0 means a watcher was found, as with the real pgrep.
+        stub('pgrep', 'exit "\${STUB_WATCHERS:-1}"');
         const press = (pick, exit) => {
             fs.writeFileSync(log, '');
             const result = run('sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
@@ -155,9 +157,22 @@ esac`);
         assert.deepEqual(lines('2\ttoken', 10), ['deleted=[2\ttoken ]', listed],
             'Alt+Delete forgets the entry and copies nothing');
         assert.deepEqual(lines('', 1), [listed], 'Cancelling changes nothing');
+        // An empty history must name the cause instead of opening an empty picker.
+        const vacant = (watchers) => {
+            fs.writeFileSync(log, '');
+            const result = run('sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
+                {env: {...process.env, PATH: `${bin}:/usr/bin`, STUB_EMPTY: '1', STUB_WATCHERS: watchers}});
+            check(result);
+            assert.equal(fs.readFileSync(log, 'utf8'), '', 'Rofi must not open on an empty history');
+            return result.stderr;
+        };
+        assert.match(vacant('0'), /empty; copy something first/, 'Watchers running: nothing copied yet');
+        assert.match(vacant('1'), /not recording; log out and back in/, 'No watchers: the cause is the session');
         // Without cliphist the shortcut must explain itself and still succeed.
-        const absent = run('sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
-            {env: {...process.env, PATH: path.join(scratch, 'empty') + ':/usr/bin'}});
+        // An empty PATH, so an installed cliphist cannot make this case reach Rofi;
+        // the shell itself then needs an absolute path of its own.
+        const absent = run('/bin/sh', [path.join(root, 'sway/config/sway/clipboard.sh')],
+            {env: {...process.env, PATH: path.join(scratch, 'empty')}});
         check(absent);
         assert.match(absent.stderr, /needs cliphist/);
     } finally {
@@ -178,6 +193,11 @@ const preview = run('bash', [path.join(root, 'setup-sway.sh'), '--dry-run'], {in
 check(preview);
 assert.match(preview.stdout, /sudo pacman -Syu --needed/);
 assert.match(preview.stdout, /Would check package availability/);
+const setup = read('setup-sway.sh');
+assert.doesNotMatch(setup, /Auto-lock/, 'Locking is manual, so the hints must not promise it');
+assert.match(setup, /No idle locking: screens go black/);
+assert.match(setup, /Alt\+C: clipboard history/);
+assert.doesNotMatch(read('README.md'), /Idle locking is set to five/, 'Stale idle summary');
 
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'anbar-sway-smoke-'));
 const bin = path.join(scratch, 'bin');
