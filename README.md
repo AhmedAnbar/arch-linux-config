@@ -455,8 +455,21 @@ session is unaffected before then, and
 [`sway/config/sway/clipboard.sh`](sway/config/sway/clipboard.sh) explains the
 missing package in a notification rather than failing silently.
 
-History lives in `~/.local/share/cliphist/db` and survives reboots, so treat it
-like any other file holding whatever you have copied. The i3 session does not get
+Because those watchers belong to the session, installing `cliphist` into a session
+that is already running records nothing until the next login. An empty history
+therefore says which of the two it is instead of opening an empty picker: *copy
+something first* when the watchers are running, or *log out and back in to start
+it* when they are not. To avoid the logout once, start them by hand:
+
+```sh
+setsid wl-paste --type text --watch cliphist store &
+setsid wl-paste --type image --watch cliphist store &
+```
+
+Images come back as image data, so paste a picked screenshot into something that
+accepts images rather than a text field. History lives in `~/.cache/cliphist/db`
+(`cliphist -db-path` prints the default) and survives reboots, so treat it like any
+other file holding whatever you have copied. It keeps the last 750 entries. The i3 session does not get
 this: `wl-paste` is Wayland-only.
 
 ## Screen locking and idle
@@ -774,8 +787,8 @@ Alt+L took the key that used to focus the window above, so use **Alt+Up** for th
 The other workspace, resize, navigation and split shortcuts match i3.
 The Waybar at the top has keyboard language, Wi-Fi, Bluetooth, CPU, RAM, disk,
 battery and a tray. Click the language label to switch; click Bluetooth to pair
-headphones. No separate volume applet is started. Idle locking is set to five
-minutes; displays power down after ten minutes, with a lock before system sleep.
+headphones. No separate volume applet is started. Nothing locks on idle: displays
+go black after five minutes, and locking waits for Alt+L or system sleep.
 Startup scripts run once per session rather than on every configuration reload.
 
 Touchscreen events are handled natively, while touchpads use two-finger natural
