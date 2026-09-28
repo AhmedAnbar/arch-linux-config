@@ -53,6 +53,7 @@ bindsym --locked XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym --locked XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 bindsym --locked XF86MonBrightnessDown exec sh ~/.config/sway/brightness.sh down
 bindsym --locked XF86MonBrightnessUp exec sh ~/.config/sway/brightness.sh up
+bindsym $mod+c exec sh ~/.config/sway/clipboard.sh
 bindsym --release Print exec sh ~/.config/sway/screenshot.sh
 bindsym --release $mod+Shift+s exec sh ~/.config/sway/screenshot.sh
 # Locking is manual only; swayidle just blanks the screen. Alt+Control+l still works.

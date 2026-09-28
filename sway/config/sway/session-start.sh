@@ -8,6 +8,11 @@ dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK \
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
 # No Picom, xss-lock, Flameshot or X11-wide autostart under Sway.
+# Clipboard history for the Alt+c Rofi picker; text and images need separate watchers.
+if command -v cliphist >/dev/null; then
+    wl-paste --type text --watch cliphist store &
+    wl-paste --type image --watch cliphist store &
+fi
 mako &
 nm-applet --indicator &
 blueman-applet &
